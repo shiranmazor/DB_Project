@@ -1,3 +1,4 @@
 import os
 import sys
-import mysql
+import mysql.connector as mdb
+
