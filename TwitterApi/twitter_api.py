@@ -12,6 +12,7 @@ class Twitter_Api():
         self.t = Twitter(auth=OAuth(TOKEN, TOKEN_KEY, CON_SECRET, CON_SECRET_KEY))
         #load users to dict
         self.load_users_from_csv()
+        self.users_id_to_screen_name = {}
 
 
     def load_users_from_csv(self):
@@ -23,6 +24,17 @@ class Twitter_Api():
                 if real_name != "" and screen_name != "":
                     self.name_to_screen[real_name] = screen_name
                     self.screen_to_name[screen_name] = real_name
+
+    def get_hoc_users_id(self):
+        '''
+        fill in the dict that connect user id to screen name
+        :return:
+        '''
+        for screen_name in self.screen_to_name:
+            user_id = self.get_userid_by_screen_name(screen_name==screen_name)
+            self.users_id_to_screen_name[user_id] = screen_name
+
+
 
 
     def get_timeline(self,screen_name, datetime_limit=None,count=200):
@@ -55,14 +67,14 @@ class Twitter_Api():
             result.append(temp_dict)
         return result
 
-    def get_followees(self,screen_name):
+    def get_followees(self,screen_name, count= 5000):
         '''
 
         :param screen_name:
         :return:latest 5000 political ***twitter ids*** (as long numbers) this user has followed
 
         '''
-        d = self.t.friends.ids(screen_name=screen_name, count=5000)["ids"]
+        d = self.t.friends.ids(screen_name=screen_name, count=count)["ids"]
 
 
     def get_timeline_only(self,screen_name, count):
@@ -115,3 +127,7 @@ class Twitter_Api():
         result['name'] = output['name']
         result['profile_image_url'] = output['profile_image_url']
         return result
+
+    def get_user_retweets(self, user_id):
+        output = self.t.statuses.retweets(id = user_id)
+        return output

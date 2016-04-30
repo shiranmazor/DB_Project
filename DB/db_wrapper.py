@@ -29,9 +29,10 @@ class DbWrapper():
     def get_values_by_id(self, table_name, id_value):
         cursor = self.con.cursor()
         query = consts.SELECT_BY_ID.format(table_name,id_value)
-        cursor.execute()
-
+        cursor.execute(query)
+        tuples = cursor.fetchall()
         cursor.close()
+        return tuples
 
     def get_values_by_field(self, table_name, field_name, field_value):
         pass
