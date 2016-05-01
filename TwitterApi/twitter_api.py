@@ -6,6 +6,10 @@ from consts import *
 
 
 class Twitter_Api():
+    '''
+    implemet twitter api relevent functions
+    important dicts: name_to_screen,screen_to_name,users_id_to_screen_name
+    '''
     def __init__(self):
         self.name_to_screen = {}
         self.screen_to_name = {}
@@ -16,14 +20,18 @@ class Twitter_Api():
 
 
     def load_users_from_csv(self):
-        with open(CSV_PATH, 'rb') as csvfile:
-            csv_data = csv.DictReader(csvfile)
-            for row in csv_data:
-                real_name = row["real_name"]
-                screen_name = row["screen_name"]
-                if real_name != "" and screen_name != "":
-                    self.name_to_screen[real_name] = screen_name
-                    self.screen_to_name[screen_name] = real_name
+        try:
+            with open(CSV_PATH, 'rb') as csvfile:
+                csv_data = csv.DictReader(csvfile)
+                for row in csv_data:
+                    real_name = row["real_name"]
+                    screen_name = row["screen_name"]
+                    if real_name != "" and screen_name != "":
+                        self.name_to_screen[real_name] = screen_name
+                        self.screen_to_name[screen_name] = real_name
+        except Exception as ex:
+            print 'Error in parsing CSV file! dictionaries will be Empty!'
+            print ex.message
 
     def get_hoc_users_id(self):
         '''
@@ -33,8 +41,6 @@ class Twitter_Api():
         for screen_name in self.screen_to_name:
             user_id = self.get_userid_by_screen_name(screen_name==screen_name)
             self.users_id_to_screen_name[user_id] = screen_name
-
-
 
 
     def get_timeline(self,screen_name, datetime_limit=None,count=200):
@@ -67,17 +73,9 @@ class Twitter_Api():
             result.append(temp_dict)
         return result
 
-    def get_followees(self,screen_name, count= 5000):
-        '''
-
-        :param screen_name:
-        :return:latest 5000 political ***twitter ids*** (as long numbers) this user has followed
-
-        '''
-        d = self.t.friends.ids(screen_name=screen_name, count=count)["ids"]
 
 
-    def get_timeline_only(self,screen_name, count):
+    def get_timeline_only(self,screen_name= None, user_id = None, count=200):
         '''
         get only x last record of tweets from a specific screen name
         :param screen_name:
@@ -85,17 +83,26 @@ class Twitter_Api():
         :return:list of dict
         '''
         result=[]
-        output_dict = self.t.statuses.user_timeline(screen_name=screen_name, count=count, trim_user=True, include_rts=True)
+        output_dict={}
+        if screen_name:
+            output_dict = self.t.statuses.user_timeline(screen_name=screen_name, count=count, trim_user=True, include_rts=True)
+        elif user_id:
+            output_dict = self.t.statuses.user_timeline(user_id =user_id, count=count, trim_user=True,
+                                                        include_rts=True)
         for item in output_dict:
+            mentions = []
             create_time = datetime.datetime.strptime(re.sub(r"[+-]([0-9])+", "", str(item["created_at"])),
                                                      "%a %b %d %H:%M:%S %Y")
 
             text = item["text"].encode('utf-8')
             # Add twitter account tagged only if screen name exists in CSV
-            mentions =[]
+            user_mentions = item['entities']['user_mentions']
 
-            temp_dict = {"id": item["id"], "text": text, "mentions": mentions, "time": create_time}
+            mentions.extend(user_mentions)
+
+            temp_dict = {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time}
             result.append(temp_dict)
+
         return result
 
     def get_userid_by_screen_name(self,screen_name):
@@ -105,11 +112,28 @@ class Twitter_Api():
         else :
             return -1
 
+    def get_relationship(self,use_id = True,source_id = None, source_screen_name = None, target_id = None,
+                         target_screen_name = None):
+        '''
+        Returns detailed information about the relationship between two arbitrary users.
+        :param use_id:
+        :param source_id:
+        :param source_screen_name:
+        :param target_id:
+        :param target_screen_name:
+        :return:
+        '''
+        if use_id:
+            output = self.t.friendships.show(source_id = source_id, target_id = target_id)
+        else:
+            output = self.t.friendships.show(source_screen_name=source_screen_name, target_screen_name=target_screen_name)
+        return output
+
     def get_user_data(self, screen_name = None, userid=None):
         '''
         return user full data by screen name or id
         :param screen_name:
-        :return:dict - id,screen_name,description,location,followers_count,friends_count,name,profile_image_url
+        :return:dict - twitter_id,screen_name,description,location,followers_count,friends_count,name,profile_image_url
         '''
         output = {}
         result = {}
@@ -118,15 +142,50 @@ class Twitter_Api():
         elif id:
             output = self.t.users.show(user_id=str(userid))
 
-        result['id'] = output['id']
+        result['twitter_id'] = output['id']
         result['screen_name'] = output['screen_name']
         result['description'] = output['description']
         result['location'] = output['location']
         result['followers_count'] = output['followers_count']
         result['friends_count'] = output['friends_count']
-        result['name'] = output['name']
-        result['profile_image_url'] = output['profile_image_url']
+        result['full_name'] = output['name']
+        result['profile_picutre_url'] = output['profile_image_url']
         return result
+
+
+    def get_user_followees(self, screen_name = None, user_id = None, count = 5000):
+        '''
+        return list of user ids the user is following - followees
+        :param screen_name:
+        :param user_id:
+        :param count:
+        :return: list
+        '''
+        ids = []
+        output = {}
+        if screen_name:
+            output = self.t.friends.ids(screen_name=screen_name, count=count)
+        elif user_id:
+            output = self.t.friends.ids(user_id=user_id, count=count)
+
+        if len(output) > 0:
+            ids = output["ids"]
+
+        return ids
+
+    def get_user_followers(self, screen_name = None, user_id = None, count = 200):
+        ids = []
+        output = {}
+        if screen_name:
+            output = self.t.followers.ids(screen_name=screen_name, count=count)
+        elif user_id:
+            output = self.t.followers.ids(user_id=user_id, count=count)
+
+        if len(output) > 0:
+            ids = output["ids"]
+
+        return ids
+
 
     def get_user_retweets(self, user_id):
         output = self.t.statuses.retweets(id = user_id)
