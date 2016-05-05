@@ -18,3 +18,5 @@ twiter_obg  = Twitter_Api()
 output_timeline = twiter_obg.get_user_data(screen_name = 'shiranmazor1')
 db_obj = DbWrapper()
 output = db_obj.get_values_by_id(table_name='Users', id_value=1)
+
+twiter_obg  = Twitter_Api()

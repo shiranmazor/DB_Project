@@ -35,6 +35,13 @@ class DbWrapper():
         return tuples
 
     def get_values_by_field(self, table_name, field_name, field_value):
+        '''
+
+        :param table_name:
+        :param field_name:
+        :param field_value:
+        :return: listof dict
+        '''
         pass
 
     def get_num_of_rows(self, table_name):

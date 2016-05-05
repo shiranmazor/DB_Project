@@ -8,5 +8,5 @@ uses twitter_api module
 '''
 import sys
 
-from twitter_api import *
+from TwitterApi.twitter_api import *
 from DB.db_wrapper import *
