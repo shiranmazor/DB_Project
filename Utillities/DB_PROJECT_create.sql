@@ -48,7 +48,7 @@ CREATE TABLE Tweets (
 
 -- Table: Users
 CREATE TABLE Users (
-    id bigint NOT NULL,
+    id bigint AUTO_INCREMENT,
     full_name varchar(100) NOT NULL,
     screen_name varchar(100) NOT NULL,
     description text NOT NULL,

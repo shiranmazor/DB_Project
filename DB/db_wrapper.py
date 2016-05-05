@@ -42,10 +42,20 @@ class DbWrapper():
         :param field_value:
         :return: listof dict
         '''
-        pass
+        cursor = self.con.cursor()
+        query = consts.SELECT_BY_FIELD.format(table_name,field_name,'%s')
+        cursor.execute(query,field_value)
+        tuples = cursor.fetchall()
+        cursor.close()
+        return tuples
 
     def get_num_of_rows(self, table_name):
-        pass
+        cursor = self.con.cursor()
+        query = 'Select COUNT(*) from {0}'.format(table_name)
+        cursor.execute(query)
+        tuples = cursor.fetchall()
+        cursor.close()
+        return tuples
 
     def insert_to_table(self, table_name, fields,values):
         cursor = self.con.cursor()
@@ -65,3 +75,6 @@ class DbWrapper():
         cursor.execute(query,values_tuple )
         self.con.commit()
         cursor.close()
+
+    def update_table(self, table_name, fields, values, condition_str):
+        pass

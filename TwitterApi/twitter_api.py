@@ -3,6 +3,7 @@ import datetime
 import re
 import csv
 from consts import *
+import traceback
 
 
 class Twitter_Api():
@@ -19,19 +20,7 @@ class Twitter_Api():
         self.users_id_to_screen_name = {}
 
 
-    def load_users_from_csv(self):
-        try:
-            with open(CSV_PATH, 'rb') as csvfile:
-                csv_data = csv.DictReader(csvfile)
-                for row in csv_data:
-                    real_name = row["real_name"]
-                    screen_name = row["screen_name"]
-                    if real_name != "" and screen_name != "":
-                        self.name_to_screen[real_name] = screen_name
-                        self.screen_to_name[screen_name] = real_name
-        except Exception as ex:
-            print 'Error in parsing CSV file! dictionaries will be Empty!'
-            print ex.message
+
 
     def get_hoc_users_id(self):
         '''
@@ -135,22 +124,26 @@ class Twitter_Api():
         :param screen_name:
         :return:dict - twitter_id,screen_name,description,location,followers_count,friends_count,name,profile_image_url
         '''
-        output = {}
-        result = {}
-        if screen_name:
-            output = self.t.users.show(screen_name=screen_name)
-        elif id:
-            output = self.t.users.show(user_id=str(userid))
+        try:
+            output = {}
+            result = {}
+            if screen_name:
+                output = self.t.users.show(screen_name=screen_name)
+            elif id:
+                output = self.t.users.show(user_id=str(userid))
 
-        result['twitter_id'] = output['id']
-        result['screen_name'] = output['screen_name']
-        result['description'] = output['description']
-        result['location'] = output['location']
-        result['followers_count'] = output['followers_count']
-        result['friends_count'] = output['friends_count']
-        result['full_name'] = output['name']
-        result['profile_picutre_url'] = output['profile_image_url']
-        return result
+            result['twitter_id'] = output['id']
+            result['screen_name'] = output['screen_name']
+            result['description'] = output['description']
+            result['location'] = output['location']
+            result['followers_count'] = output['followers_count']
+            result['friends_count'] = output['friends_count']
+            result['full_name'] = output['name']
+            result['profile_picutre_url'] = output['profile_image_url']
+            return result
+        except Exception as Ex:
+            print traceback.format_exc()
+            return {}
 
 
     def get_user_followees(self, screen_name = None, user_id = None, count = 5000):
