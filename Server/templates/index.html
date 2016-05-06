@@ -38,26 +38,26 @@
 
         <div class="row marketing">
             <div class="col-lg-6">
-                {% for p in params %}
-                    <h4>{{p}}</h4>
-                    <p>Example.....</p>
+                <form action="bottom" target="bottom" method="post">
+                <select name="screen_name_1">
+                {% for real_name,screen_name in users_tuples %}
+                    <option value="{{screen_name}}">{{real_name}}</option>
                 {% endfor %}
+                </select>
+                <select name="screen_name_2">
+                {% for real_name,screen_name in users_tuples %}
+                    <option  value="{{screen_name}}">{{real_name}}</option>
+                {% endfor %}
+                </select>
+                <button type="submit">Compare</button>
+                </form>
             </div>
 
-            <div class="col-lg-6">
-                <h4>Bucket List</h4>
-                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-                <h4>Bucket List</h4>
-                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-                <h4>Bucket List</h4>
-                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-            </div>
         </div>
 
         <footer class="footer">
             <p>&copy; Company 2015</p>
+            <iframe name="bottom" />
         </footer>
 
     </div>
