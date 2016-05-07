@@ -33,7 +33,20 @@ def load_users_dict():
         print 'Error in parsing CSV file! dictionaries will be Empty!'
         print ex.message
 
+def create_sorted_tuples(*fields):
+    result = []
+    for user in users_data.keys():
+        #print user
+        #print str(users_data)
+        temp = [users_data[user]["screen_name"]]
+        for field in fields:
+            temp.append(users_data[user][field])
+        result.append(temp)
+        #print str(temp)
+    return sorted(result, key=lambda item: item[0])
+
 
 load_users_from_csv()
 load_users_dict()
-users_data_sorted = sorted(name_to_screen.items(), key=lambda item: item[0])
+#for i in range(len(users_data_sorted)):
+#    users_data_sorted[i] = (users_data_sorted[i][0], users_data_sorted[i][1], users_data[users_data_sorted[i][1]]["party"])

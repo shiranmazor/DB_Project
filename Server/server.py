@@ -3,26 +3,35 @@ import sys
 sys.path.append("../")
 from ServerLogic.common import *
 
-application = Flask(__name__)
+application = Flask(__name__, static_url_path = "/static", static_folder = "static")
 
 
 @application.route("/")
 def hello():
     data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
-            "title": "Hello Mates", "users_tuples": users_data_sorted}
+            "title": "Hello Mates", "users_tuples": create_sorted_tuples("real_name", "party")}
     return render_template('index.html', **data)
+
+@application.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
 
 @application.route("/bottom", methods = ['GET', 'POST'])
 def bottom():
     screen_name_1 = str(request.form['screen_name_1'])
     screen_name_2 = str(request.form['screen_name_2'])
+
+    def compare_fields(field):
+        return (users_data[screen_name_1][field] == users_data[screen_name_2][field])
+
     html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["real_name"], users_data[screen_name_2]["real_name"])
     html = ""
-    if users_data[screen_name_1]["role"] == users_data[screen_name_2]["role"]:
+
+    if compare_fields("role"):
         html += (html_pattern + users_data[screen_name_1]["role"] + "s")
-    if users_data[screen_name_1]["state"] == users_data[screen_name_2]["state"]:
+    if compare_fields("state"):
         html += (html_pattern + "from " + users_data[screen_name_1]["state"])
-    if len(users_data[screen_name_1]["party"]) == 1 and users_data[screen_name_1]["party"] == users_data[screen_name_2]["party"]:
+    if users_data[screen_name_1]["party"] in ("D", "R") and compare_fields("party"):
         html += (html_pattern + users_data[screen_name_1]["party"].replace("R", "Republicans").replace("D", "Democrats"))
     return html
 

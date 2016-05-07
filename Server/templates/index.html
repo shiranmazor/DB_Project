@@ -8,12 +8,24 @@
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <style>
+        option {
+            color:white;
+            background-color:black;
+        }
+        .D {
+            background-color:navy;
+        }
+        .R {
+            background-color:maroon;
+        }
 
+    </style>
 
 </head>
 
 <body>
-
+<img src="{{ url_for('static', filename = 'logo.gif') }}" width="200" height="85">
     <div class="container">
         <div class="header">
             <nav>
@@ -40,13 +52,13 @@
             <div class="col-lg-6">
                 <form action="bottom" target="bottom" method="post">
                 <select name="screen_name_1">
-                {% for real_name,screen_name in users_tuples %}
-                    <option value="{{screen_name}}">{{real_name}}</option>
+                {% for screen_name,real_name,party in users_tuples %}
+                    <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
                 {% endfor %}
                 </select>
                 <select name="screen_name_2">
-                {% for real_name,screen_name in users_tuples %}
-                    <option  value="{{screen_name}}">{{real_name}}</option>
+                {% for screen_name,real_name,party in users_tuples %}
+                    <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
                 {% endfor %}
                 </select>
                 <button type="submit">Compare</button>
