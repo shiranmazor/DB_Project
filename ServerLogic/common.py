@@ -45,6 +45,18 @@ def create_sorted_tuples(*fields):
         #print str(temp)
     return sorted(result, key=lambda item: item[0])
 
+def get_values_by_key(key_name):
+    '''
+    getting list of values from user_data by specific key
+    :param key_name:
+    :return: list
+    '''
+    values = []
+    for item in users_data:
+        if users_data[item][key_name] not in values:
+            values.append(users_data[item][key_name])
+
+    return values
 
 load_users_from_csv()
 load_users_dict()

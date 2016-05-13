@@ -4,6 +4,7 @@ import re
 import csv
 from consts import *
 import traceback
+from ServerLogic.common import *
 
 
 class Twitter_Api():
@@ -12,11 +13,10 @@ class Twitter_Api():
     important dicts: name_to_screen,screen_to_name,users_id_to_screen_name
     '''
     def __init__(self):
-        self.name_to_screen = {}
-        self.screen_to_name = {}
+        #self.name_to_screen = {}
+        #self.screen_to_name = {}
         self.t = Twitter(auth=OAuth(TOKEN, TOKEN_KEY, CON_SECRET, CON_SECRET_KEY))
         #load users to dict
-        self.load_users_from_csv()
         self.users_id_to_screen_name = {}
 
 
@@ -27,7 +27,7 @@ class Twitter_Api():
         fill in the dict that connect user id to screen name
         :return:
         '''
-        for screen_name in self.screen_to_name:
+        for screen_name in screen_to_name:
             user_id = self.get_userid_by_screen_name(screen_name==screen_name)
             self.users_id_to_screen_name[user_id] = screen_name
 
@@ -52,11 +52,11 @@ class Twitter_Api():
                 break # Reached datetime limit, older posts are irrelevant
             text = item["text"].encode('utf-8')
             # Add twitter account tagged only if screen name exists in CSV
-            mentions = [u_m["screen_name"].encode('utf-8') for u_m in item["entities"]["user_mentions"] if u_m["screen_name"] in self.screen_to_name]
+            mentions = [u_m["screen_name"].encode('utf-8') for u_m in item["entities"]["user_mentions"] if u_m["screen_name"] in screen_to_name]
             # Search the text for more mentions
-            for real_name in self.name_to_screen:
+            for real_name in name_to_screen:
                 if real_name in text:
-                    mentions.append(self.screen_to_name[real_name])
+                    mentions.append(screen_to_name[real_name])
 
             temp_dict = {"id": item["id"], "text": text, "mentions": mentions, "time": create_time}
             result.append(temp_dict)
@@ -166,7 +166,7 @@ class Twitter_Api():
 
         return ids
 
-    def get_user_followers(self, screen_name = None, user_id = None, count = 200):
+    def get_user_followers(self, screen_name = None, user_id = None, count = 5000):
         ids = []
         output = {}
         if screen_name:

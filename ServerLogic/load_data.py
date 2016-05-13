@@ -10,11 +10,14 @@ import sys
 import time
 from TwitterApi.twitter_api import *
 from DB.db_wrapper import *
+from ServerLogic.common import *
+import traceback
 
 def insert_new_data():
     print 'connecting to db'
     db_obj = DbWrapper()
     twiter_obj = Twitter_Api()
+    return db_obj,twiter_obj
 
 
 def load_users_table(db_obj, twiter_obj):
@@ -24,10 +27,10 @@ def load_users_table(db_obj, twiter_obj):
     :param twiter_obg:
     :return:
     '''
-    sleeping_time = 60*16 #16minutes
+    sleeping_time = 60*30 #16minutes
     requests_limit = 150 # the limit is 180 requests
     request_counter = 0
-    for screen_name in twiter_obj.screen_to_name:
+    for screen_name in users_data:
         try:
             if request_counter == requests_limit:
                 print 'reach requests limit sleeping for {0} seconds'.format(sleeping_time)
@@ -36,15 +39,141 @@ def load_users_table(db_obj, twiter_obj):
             request_counter+=1
             if len(user_output)>0:
                 fields = ['full_name', 'screen_name', 'description', 'location', 'followers_count', 'friends_count',
-                          'twitter_id','profile_picture_url']
+                          'twitter_id','profile_picture_url','role_id','party_id']
+
+                #getting rol_id and party_id value
+                party_id, role_id = get_party_role_id(db_obj, screen_name)
+
                 values = [user_output['full_name'], user_output['screen_name'], user_output['description'],
                           user_output['location'], user_output['followers_count'], user_output['friends_count'],
-                          user_output['twitter_id'], user_output['profile_picutre_url']]
+                          user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
+
                 db_obj.insert_to_table(table_name='Users', fields=fields, values=values)
             else:
-                print 'problem getting user data on {0}'..format(screen_name)
+                print 'problem getting user data on {0}'.format(screen_name)
+                print traceback.format_exc()
+
         except:
             print 'problem with loading and inserting user {0}'.format(screen_name)
+            print traceback.format_exc()
+
+def load_Followers(db_obj,twiter_obj ):
+    '''
+    scan all the users id in db from users table, for each user id:
+    1. get followers list from twitter
+    2. get friends list \ followee id
+    3. save all in different records in followers table
+    :param db_obj:
+    :param twiter_obj:
+    :return:
+    '''
+    try:
+        sleeping_time_followers = 60 * 30  # 16 minutes
+        requests_limit_followers = 15  # the limit is 180 requests
+        request_counter_followers = 0
+
+        # get all user_id from db
+        select_user_id = "select id,screen_name from users"
+        outputs = db_obj.execute_generic_query(select_user_id)
+        ids_lst = [x['id'] for x in outputs]
+        for output_id in outputs:
+            try:
+                user_id = output_id['id']
+                screen_name = output_id['screen_name']
+                print 'start inserting followers+ followees for user :{0}'.format(screen_name)
+                # get followers id
+                if request_counter_followers == requests_limit_followers:
+                    print 'reaching request limit on followers ans friends sleeping for {0} seconds'.format(
+                        sleeping_time_followers)
+                    time.sleep(sleeping_time_followers)
+
+                request_counter_followers += 1
+                followers_ids = twiter_obj.get_user_followers(screen_name=screen_name)
+
+                request_counter_followers += 1
+                followees_ids = twiter_obj.get_user_followees(screen_name=screen_name)
+
+                # insert data to db
+                # first as user_id as followee_id - insert all followers of this user to DB
+                followee_id = user_id
+                for follower_id in followers_ids:
+                    # check if follower is in our users:
+                    user_data = db_obj.get_user_data_by_twitter_id(twitter_id=follower_id)
+                    if len(user_data) == 0:
+                        continue
+                    else:
+                        follower_user_id = user_data[0]['id']
+
+                        fields = ['follower_id', 'followee_id']
+                        values = [follower_user_id, followee_id]
+                        try:
+                            db_obj.insert_to_table(table_name='followers', fields=fields, values=values)
+                        except:
+                            #in case the tuple was already exist!
+                            print traceback.format_exc()
+
+                #insert all followee data about the user:
+                follower_id = user_id
+                for followee_id in followees_ids:
+                    # check if followee is in our users:
+                    user_data = db_obj.get_user_data_by_twitter_id(twitter_id=followee_id)
+                    if len(user_data) == 0:
+                        continue
+                    else:
+                        followee_user_id = user_data[0]['id']
+                        fields = ['follower_id', 'followee_id']
+                        values = [follower_id, followee_user_id]
+                        try:
+                            db_obj.insert_to_table(table_name='followers', fields=fields, values=values)
+                        except:
+                            # in case the tuple was already exist!
+                            print traceback.format_exc()
+
+            except:
+                print 'problen getting followers+followees of user {0}'.format(output_id)
+                print traceback.format_exc()
+    except:
+        print traceback.format_exc()
+
+def get_party_role_id(db_obj,screen_name):
+    role_name = users_data[screen_name]['role']
+    party_letter = users_data[screen_name]['party']
+    party_name = 'Democratic' if party_letter == 'D' else 'Republican'
+    party_out = db_obj.get_values_by_field(table_name = 'Party', field_name = 'party_name', field_value = party_name)
+    role_out = db_obj.get_values_by_field(table_name='Role', field_name='rol_name', field_value=role_name)
+    return party_out[0]['party_id'],role_out[0]['role_id']
+
+def load_party_data(db_obj):
+    '''
+    loading party static record from user_data dict
+    the parites are - Democratic -1, Republican -2
+    :return:
+    '''
+    fields = ['party_name']
+    values = ['Democratic','Republican']
+    try:
+        for value in values:
+            db_obj.insert_to_table(table_name='Party', fields=fields, values=[value])
+    except Exception as Ex:
+        print 'problem with writing party name to db'
+        print traceback.format_exc()
+
+def load_Role_data(db_obj):
+    '''
+    loading party static record from user_data dict
+    the parites are - Democratic -1, Republican -2
+    :return:
+    '''
+    fields = ['rol_name']
+    roles = get_values_by_key('role')
+    try:
+        for value in roles:
+            db_obj.insert_to_table(table_name='Role', fields=fields, values=[value])
+    except Exception as Ex:
+        print 'problem with writing party name to db'
+        print traceback.format_exc()
+
+
 
 def update_data():
     pass
@@ -52,8 +181,8 @@ def update_data():
 def run():
     db_obj = DbWrapper()
     twiter_obj = Twitter_Api()
+
     load_users_table(db_obj, twiter_obj)
 
 if __name__ == '__main__':
-
     run()
