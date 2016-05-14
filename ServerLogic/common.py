@@ -45,6 +45,11 @@ def create_sorted_tuples(*fields):
         #print str(temp)
     return sorted(result, key=lambda item: item[0])
 
+def str_replace(text, *params):
+    assert len(params) % 2 == 0
+    for i in range(0, len(params), 2):
+        text = text.replace(params[i], params[i + 1])
+    return text
 
 load_users_from_csv()
 load_users_dict()

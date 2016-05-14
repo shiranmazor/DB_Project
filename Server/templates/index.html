@@ -26,53 +26,50 @@
 
 <body>
 <img src="{{ url_for('static', filename = 'logo.gif') }}" width="200" height="85">
-    <div class="container">
-        <div class="header">
-            <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li role="presentation" class="active"><a href="#">Home</a>
-                    </li>
-                    <li role="presentation"><a href="#">Sign In</a>
-                    </li>
-                    <li role="presentation"><a href="showSignUp">Sign Up</a>
-                    </li>
-                </ul>
-            </nav>
-            <h3 class="text-muted">Python Flask App</h3>
-        </div>
+<div class="container">
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                <li role="presentation" class="active"><a href="#">Home</a>
+                </li>
+                <li role="presentation"><a href="#">Sign In</a>
+                </li>
+                <li role="presentation"><a href="showSignUp">Sign Up</a>
+                </li>
+            </ul>
+        </nav>
+        <h3 class="text-muted">Python Flask App</h3>
+    </div>
 
-        <div class="jumbotron">
-            <h1>{{title}}</h1>
-            <p class="lead"></p>
-            <p><a class="btn btn-lg btn-success" href="showSignUp" role="button">Sign up today</a>
-            </p>
-        </div>
+    <div class="jumbotron">
+        <h1>{{title}}</h1>
+        <p class="lead"></p>
+        <p><a class="btn btn-lg btn-success" href="showSignUp" role="button">Sign up today</a>
+        </p>
+    </div>
 
-        <div class="row marketing">
-            <div class="col-lg-6">
-                <form action="bottom" target="bottom" method="post">
-                <select name="screen_name_1">
-                {% for screen_name,real_name,party in users_tuples %}
+    <div class="row marketing">
+        <div class="col-lg-6">
+            <form action="bottom" target="bottom" method="post">
+                {%  for select in select_names %}
+                <select name="{{select}}">
+                    {% for screen_name,real_name,party in users_tuples %}
                     <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
-                {% endfor %}
+                    {% endfor %}
                 </select>
-                <select name="screen_name_2">
-                {% for screen_name,real_name,party in users_tuples %}
-                    <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
                 {% endfor %}
-                </select>
                 <button type="submit">Compare</button>
-                </form>
-            </div>
-
+            </form>
         </div>
-
-        <footer class="footer">
-            <p>&copy; Company 2015</p>
-            <iframe name="bottom" />
-        </footer>
 
     </div>
+
+    <footer class="footer">
+        <p>&copy; Company 2015</p>
+        <iframe name="bottom" />
+    </footer>
+
+</div>
 </body>
 
 </html>

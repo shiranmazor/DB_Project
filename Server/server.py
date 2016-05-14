@@ -1,15 +1,16 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, send_from_directory
 import sys
 sys.path.append("../")
 from ServerLogic.common import *
 
-application = Flask(__name__, static_url_path = "/static", static_folder = "static")
+application = Flask(__name__, static_url_path = "/templates/static", static_folder = "static")
 
 
 @application.route("/")
 def hello():
     data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
-            "title": "Hello Mates", "users_tuples": create_sorted_tuples("real_name", "party")}
+            "title": "Hello Mates", "users_tuples": create_sorted_tuples("real_name", "party"),
+            "select_names": ["screen_name_1", "screen_name_2"]}
     return render_template('index.html', **data)
 
 @application.route('/static/<path:path>')
@@ -32,7 +33,7 @@ def bottom():
     if compare_fields("state"):
         html += (html_pattern + "from " + users_data[screen_name_1]["state"])
     if users_data[screen_name_1]["party"] in ("D", "R") and compare_fields("party"):
-        html += (html_pattern + users_data[screen_name_1]["party"].replace("R", "Republicans").replace("D", "Democrats"))
+        html += (html_pattern + str_replace(users_data[screen_name_1]["party"],"R", "Republicans","D", "Democrats"))
     return html
 
 @application.route("/test")
