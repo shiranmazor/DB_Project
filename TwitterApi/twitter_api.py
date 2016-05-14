@@ -69,7 +69,8 @@ class Twitter_Api():
         get only x last record of tweets from a specific screen name
         :param screen_name:
         :param count:
-        :return:list of dict
+        :return:list of dict : {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time,
+         "urls":urls, "tweet_files":tweet_files_data}
         '''
         result=[]
         output_dict={}
@@ -85,11 +86,25 @@ class Twitter_Api():
 
             text = item["text"].encode('utf-8')
             # Add twitter account tagged only if screen name exists in CSV
+            urls = []
             user_mentions = item['entities']['user_mentions']
+            tweet_urls = item['entities']["urls"]
+            for url_dict in tweet_urls:
+                urls.append(url_dict["url"])
 
             mentions.extend(user_mentions)
 
-            temp_dict = {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time}
+            #get all pictures and media
+            tweet_files_data = [] #list of dict with all the relevet fields
+            medias = item['entities']["media"]
+            for media in medias:
+                file_dict = {}
+                file_dict['file_url'] = media['media_url']
+                file_dict['file_type'] = media['type']
+                file_dict['tweet_id'] = media['id']
+                tweet_files_data.append(file_dict)
+
+            temp_dict = {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time, "urls":urls, "tweet_files":tweet_files_data}
             result.append(temp_dict)
 
         return result

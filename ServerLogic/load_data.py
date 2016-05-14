@@ -27,14 +27,16 @@ def load_users_table(db_obj, twiter_obj):
     :param twiter_obg:
     :return:
     '''
-    sleeping_time = 60*30 #16minutes
-    requests_limit = 150 # the limit is 180 requests
+    sleeping_time = 60*20 #16minutes
+    requests_limit = 120 # the limit is 180 requests
     request_counter = 0
     for screen_name in users_data:
         try:
             if request_counter == requests_limit:
-                print 'reach requests limit sleeping for {0} seconds'.format(sleeping_time)
+                print 'reach requests limit sleeping for {0} seconds starting from {1}'.format(sleeping_time, datetime.datetime.now())
                 time.sleep(sleeping_time)
+                request_counter =0
+
             user_output = twiter_obj.get_user_data(screen_name = screen_name)
             request_counter+=1
             if len(user_output)>0:
@@ -49,6 +51,7 @@ def load_users_table(db_obj, twiter_obj):
                           user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
 
                 db_obj.insert_to_table(table_name='Users', fields=fields, values=values)
+                print 'insert user {0}'.format(screen_name)
             else:
                 print 'problem getting user data on {0}'.format(screen_name)
                 print traceback.format_exc()
@@ -56,6 +59,7 @@ def load_users_table(db_obj, twiter_obj):
         except:
             print 'problem with loading and inserting user {0}'.format(screen_name)
             print traceback.format_exc()
+    print 'done with Users table!'
 
 def load_Followers(db_obj,twiter_obj ):
     '''
@@ -73,8 +77,7 @@ def load_Followers(db_obj,twiter_obj ):
         request_counter_followers = 0
 
         # get all user_id from db
-        select_user_id = "select id,screen_name from users"
-        outputs = db_obj.execute_generic_query(select_user_id)
+        outputs = db_obj.get_userid_screen_name_db()
         ids_lst = [x['id'] for x in outputs]
         for output_id in outputs:
             try:
@@ -134,6 +137,7 @@ def load_Followers(db_obj,twiter_obj ):
                 print traceback.format_exc()
     except:
         print traceback.format_exc()
+    print 'done with followers table!'
 
 def get_party_role_id(db_obj,screen_name):
     role_name = users_data[screen_name]['role']
@@ -174,6 +178,56 @@ def load_Role_data(db_obj):
         print traceback.format_exc()
 
 
+def load_tweets_all_users(db_obj , twiter_obj):
+    '''
+    this function geting all user ids fro db and load all tweets for all users
+    also update tables - tweet_files, mentions
+    :param db_obj:
+    :param twiter_obj:
+    :return:
+    '''
+    #get all users id and screen_name from db
+    users_info = db_obj.get_userid_screen_name_db()
+    for user_info in users_info:
+        user_db_id = user_info['id']
+        screen_name = user_info['screen_name']
+
+def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
+    '''
+    getting the last 500 tweets of the user by screen name and insert them to db
+    fill in - Mentions table, tweets and tweet files
+    :param db_obj:
+    :param twiter_obj:
+    :param user_db_id:
+    :param screen_name:
+    :return:
+    '''
+    user_tweets = twiter_obj.get_timeline_only(screen_name= screen_name, count=500)
+    #insert to tweets table
+    tweets_fields = ["text","date","url","User_id","tweet_id"]
+    tweet_files_fields = ["file_type","file_url","Tweets_id"]
+    mentions_fields = ["tagged_users_id","Tweet_id"]
+
+
+    for tweet in user_tweets:
+        # tweet table:
+        urls = ''
+        for tweet_url in tweet['urls']:
+            urls+=tweet_url+'; '
+
+        tweet_values = [tweet["text"],tweet["time"],urls, user_db_id,tweet["tweet_id"]]
+        db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
+        last_id = db_obj.get_last_id_from_table('tweets')['id']
+        #tweet files table:
+        tweet_files = tweet['tweet_files']
+        for tweet_file in tweet_files:
+
+            tweet_files_values = [tweet_file['file_type'], tweet_file['file_url'],last_id]
+            db_obj.insert_to_table(table_name='tweet_files', fields=tweet_files_fields, values=tweet_files_values)
+
+        #mentions table:
+
+
 
 def update_data():
     pass
@@ -181,7 +235,8 @@ def update_data():
 def run():
     db_obj = DbWrapper()
     twiter_obj = Twitter_Api()
-
+    load_party_data(db_obj)
+    load_Role_data(db_obj)
     load_users_table(db_obj, twiter_obj)
 
 if __name__ == '__main__':

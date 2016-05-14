@@ -112,5 +112,20 @@ class DbWrapper():
             print traceback.format_exc()
 
 
+    def get_userid_screen_name_db(self):
+        select_user_id = "select id,screen_name from users"
+        outputs = self.execute_generic_query(select_user_id)
+        return outputs
+
+    def get_user_ids(self):
+        select_user_id = "select id from users"
+        outputs = self.execute_generic_query(select_user_id)
+        return outputs
+
+    def get_last_id_from_table(self, table_name):
+        qeury = 'select max(id) from {0}'.format(table_name)
+        outputs = self.execute_generic_query(qeury)
+        return outputs
+
     def update_table(self, table_name, fields, values, condition_str):
         pass

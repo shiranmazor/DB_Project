@@ -27,7 +27,7 @@ CREATE TABLE Searches (
 -- Table: Tweet_files
 CREATE TABLE Tweet_files (
     id bigint AUTO_INCREMENT,
-    filename text NOT NULL,
+    file_type text NOT NULL,
     file_url text NOT NULL,
     Tweets_id bigint NOT NULL,
     CONSTRAINT Tweet_files_pk PRIMARY KEY (id)
@@ -40,32 +40,32 @@ CREATE TABLE Tweets (
     date DATETIME NOT NULL,
     url text NOT NULL,
     User_id bigint NOT NULL,
-    tweet_id bigint NOT NULL,
+    tweet_id bigint NOT NULL UNIQUE,
     CONSTRAINT Tweets_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE Party (
 	party_id bigint AUTO_INCREMENT,
-	party_name TEXT NOT NULL,
+	party_name varchar(100) NOT NULL UNIQUE,
 	CONSTRAINT Party_pk PRIMARY KEY (party_id)
 );
 
     CREATE TABLE Role (
 	role_id bigint AUTO_INCREMENT,
-	rol_name TEXT NOT NULL,
+	rol_name varchar(100) NOT NULL UNIQUE,
 	CONSTRAINT Role_pk PRIMARY KEY (role_id)
 );
 
 -- Table: Users
 CREATE TABLE Users (
     id bigint AUTO_INCREMENT,
-    full_name varchar(100) NOT NULL,
-    screen_name varchar(100) NOT NULL,
+    full_name varchar(200) NOT NULL,
+    screen_name varchar(200) NOT NULL,
     description text NOT NULL,
     location varchar(100) NOT NULL,
     followers_count bigint NOT NULL,
     friends_count bigint NOT NULL,
-    twitter_id bigint NOT NULL,
+    twitter_id bigint NOT NULL UNIQUE,
     profile_picture_url varchar(200) NULL,
     role_id bigint NOT NULL,
 	party_id bigint NOT NULL,
