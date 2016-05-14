@@ -72,7 +72,7 @@ def load_Followers(db_obj,twiter_obj ):
     :return:
     '''
     try:
-        sleeping_time_followers = 60 * 30  # 16 minutes
+        sleeping_time_followers = 60 * 20  # 16 minutes
         requests_limit_followers = 15  # the limit is 180 requests
         request_counter_followers = 0
 
@@ -88,6 +88,7 @@ def load_Followers(db_obj,twiter_obj ):
                 if request_counter_followers == requests_limit_followers:
                     print 'reaching request limit on followers ans friends sleeping for {0} seconds'.format(
                         sleeping_time_followers)
+                    request_counter_followers = 0
                     time.sleep(sleeping_time_followers)
 
                 request_counter_followers += 1
@@ -186,11 +187,22 @@ def load_tweets_all_users(db_obj , twiter_obj):
     :param twiter_obj:
     :return:
     '''
+    sleeping_time = 60*20 #16minutes
+    requests_limit = 150 # the limit is 180 requests
+    request_counter = 0
+
+    if request_counter == requests_limit:
+        request_counter = 0
+        print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit,sleeping_time)
+        time.sleep(sleeping_time)
+
     #get all users id and screen_name from db
     users_info = db_obj.get_userid_screen_name_db()
+    request_counter+=1
     for user_info in users_info:
         user_db_id = user_info['id']
         screen_name = user_info['screen_name']
+        load_tweets_user(db_obj, twiter_obj, user_db_id, screen_name)
 
 def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
     '''
@@ -202,32 +214,74 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
     :param screen_name:
     :return:
     '''
-    user_tweets = twiter_obj.get_timeline_only(screen_name= screen_name, count=500)
-    #insert to tweets table
-    tweets_fields = ["text","date","url","User_id","tweet_id"]
-    tweet_files_fields = ["file_type","file_url","Tweets_id"]
-    mentions_fields = ["tagged_users_id","Tweet_id"]
+    try:
+        print 'loading tweets for user {0}'.format(screen_name)
+        user_tweets = twiter_obj.get_timeline_only(screen_name= screen_name, count=500)
+        #insert to tweets table
+        tweets_fields = ["text","date","url","User_id","tweet_id"]
+        tweet_files_fields = ["file_type","file_url","Tweets_id"]
+        mentions_fields = ["tagged_users_id","Tweet_id"]
+        users_id_screen_name = db_obj.get_userid_screen_name_db()
+        screen_names = [x['screen_name'] for x in users_id_screen_name]
+
+        for tweet in user_tweets:
+            try:
+                # tweet table:
+                urls = ''
+                for tweet_url in tweet['urls']:
+                    urls+=tweet_url+'; '
+
+                tweet_values = [tweet["text"],tweet["time"],urls, user_db_id,tweet["tweet_id"]]
+                db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
+                db_tweet_id = db_obj.get_last_id_from_table('tweets')['id']
+                #tweet files table:
+                tweet_files = tweet['tweet_files']
+                for tweet_file in tweet_files:
+
+                    tweet_files_values = [tweet_file['file_type'], tweet_file['file_url'],db_tweet_id]
+                    db_obj.insert_to_table(table_name='tweet_files', fields=tweet_files_fields, values=tweet_files_values)
+
+                #finish deal with tweet files
+                ############mentions table:
+                ids,mentions_users = return_mentions_hoc_users(db_obj, tweet['mentions'], users_id_screen_name, screen_names)
+
+                #search mentions in tweet text and add them to ids list
+                text = tweet['text']
+                for screen_name in screen_names:
+                    if screen_name in text:
+                        ids.append(get_id_by_screenname(screen_name, users_id_screen_name))
+
+                for user_id in ids:
+                    mention_values = [user_id, db_tweet_id]
+                    db_obj.insert_to_table(table_name='mentions', fields=mentions_fields, values=mention_values)
+            except:
+                print 'error in loading tweet continue to the next one'
+                print traceback.format_exc()
+    except:
+        print 'Error in loading tweets for user {0}'.format(screen_name)
+        print traceback.format_exc()
 
 
-    for tweet in user_tweets:
-        # tweet table:
-        urls = ''
-        for tweet_url in tweet['urls']:
-            urls+=tweet_url+'; '
+def get_id_by_screenname(screen_name,users_id_screen_name):
+    for item in users_id_screen_name:
+        if item['screen_name'] == screen_name:
+            return item['id']
 
-        tweet_values = [tweet["text"],tweet["time"],urls, user_db_id,tweet["tweet_id"]]
-        db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
-        last_id = db_obj.get_last_id_from_table('tweets')['id']
-        #tweet files table:
-        tweet_files = tweet['tweet_files']
-        for tweet_file in tweet_files:
+def return_mentions_hoc_users(db_obj, mentions, users_id_screen_name, screen_names):
+    '''
+    get the mentions list and remove all the users that are not in db
+    :param db_obj:
+    :param mentions:
+    :return: two lists: user_ids, screen_names
+    '''
+    users_screen_names = []
+    ids = []
 
-            tweet_files_values = [tweet_file['file_type'], tweet_file['file_url'],last_id]
-            db_obj.insert_to_table(table_name='tweet_files', fields=tweet_files_fields, values=tweet_files_values)
-
-        #mentions table:
-
-
+    for name in mentions:
+        if name  in screen_names:
+            users_screen_names.append(name)
+    ids = [x['id'] for x in users_id_screen_name if x['screen_name'] in users_screen_names]
+    return ids , users_screen_names
 
 def update_data():
     pass
@@ -235,9 +289,10 @@ def update_data():
 def run():
     db_obj = DbWrapper()
     twiter_obj = Twitter_Api()
-    load_party_data(db_obj)
-    load_Role_data(db_obj)
-    load_users_table(db_obj, twiter_obj)
+    #load_party_data(db_obj)
+    #load_Role_data(db_obj)
+    #load_users_table(db_obj, twiter_obj)
+    load_Followers(db_obj, twiter_obj)
 
 if __name__ == '__main__':
     run()
