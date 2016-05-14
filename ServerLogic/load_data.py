@@ -85,7 +85,7 @@ def load_Followers(db_obj,twiter_obj ):
                 screen_name = output_id['screen_name']
                 print 'start inserting followers+ followees for user :{0}'.format(screen_name)
                 # get followers id
-                if request_counter_followers == requests_limit_followers:
+                if request_counter_followers >= requests_limit_followers:
                     print 'reaching request limit on followers ans friends sleeping for {0} seconds'.format(
                         sleeping_time_followers)
                     request_counter_followers = 0
@@ -191,7 +191,7 @@ def load_tweets_all_users(db_obj , twiter_obj):
     requests_limit = 150 # the limit is 180 requests
     request_counter = 0
 
-    if request_counter == requests_limit:
+    if request_counter >= requests_limit:
         request_counter = 0
         print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit,sleeping_time)
         time.sleep(sleeping_time)
@@ -294,5 +294,21 @@ def run():
     #load_users_table(db_obj, twiter_obj)
     load_Followers(db_obj, twiter_obj)
 
+def fill_db_from_screch():
+    db_obj = DbWrapper()
+    twiter_obj = Twitter_Api()
+    print 'loading party table'
+    load_party_data(db_obj)
+    print 'loading role table'
+    load_Role_data(db_obj)
+    print 'loading users table'
+    load_users_table(db_obj, twiter_obj)
+    print 'loading followers'
+    load_Followers(db_obj, twiter_obj)
+    print 'loading tweets table with tweet files and mentions on all users'
+    load_tweets_all_users(db_obj, twiter_obj)
+    print 'finish loading table!'
+
+
 if __name__ == '__main__':
-    run()
+    fill_db_from_screch()

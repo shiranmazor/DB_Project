@@ -107,9 +107,10 @@ class DbWrapper():
             cursor.execute(query,values_tuple )
             self.con.commit()
             cursor.close()
-        except:
+        except Exception as ex:
             print 'problem in inserting to DB! ,qeury won\'t be executed, qeury:{0}'.format(query)
-            print traceback.format_exc()
+            if 'Duplicate entry' not in ex.message:
+                print traceback.format_exc()
 
 
     def get_userid_screen_name_db(self):
