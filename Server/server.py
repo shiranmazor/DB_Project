@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, url_for, send_from_directory
 import sys
 sys.path.append("../")
 from ServerLogic.common import *
+from ServerLogic.user_data import *
+from ServerLogic.freindship_data import *
 
 application = Flask(__name__, static_url_path = "/templates/static", static_folder = "static")
 

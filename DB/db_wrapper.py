@@ -36,6 +36,29 @@ class DbWrapper():
         cursor.close()
         return tuples
 
+    def get_multiple_values_by_field(self, return_fileds,  table_name, field_name =None, field_value =None):
+        try:
+            cursor = self.con.cursor()
+            query = 'select '
+            for key in return_fileds:
+                query+=key+','
+
+            query = query[:-1]
+            query+='from '+table_name
+            if  field_name:
+                values_tuple = (field_value,)
+                query+='where '+field_name+'=%s'
+                cursor.execute(query, values_tuple)
+            else:
+                cursor.execute(query)
+
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+        except:
+            print traceback.format_exc()
+
     def get_values_by_field(self, table_name, field_name, field_value):
         '''
         convert field_value to a tuple

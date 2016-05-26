@@ -5,7 +5,7 @@ sys.path.append("../")
 
 name_to_screen = {}
 screen_to_name = {}
-users_data = {}
+users_data = {} #keys are "screen_name" values - list of all csv fields
 
 
 
