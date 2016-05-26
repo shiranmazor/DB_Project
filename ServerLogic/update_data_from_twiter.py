@@ -247,4 +247,5 @@ def update_user_tweet( user_db_id, screen_name,from_date, db_logic):
 
 
 if __name__ == '__main__':
+    
     update_Tweets(all = True)

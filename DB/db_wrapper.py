@@ -68,6 +68,7 @@ class DbWrapper():
         :return: list of dict
         '''
         try:
+
             cursor = self.con.cursor()
             values_tup = (field_value,)
             query = consts.SELECT_BY_FIELD.format(table_name,field_name,'%s')

@@ -41,6 +41,7 @@ def get_user_list():
     return a list of dict with : id, screen_name, full_name
     :return:
     '''
+
     return_fileds = ['id','screen_name','full_name']
     users_output = db_global_object.get_multiple_values_by_field(return_fileds,  table_name = 'users')
     return users_output

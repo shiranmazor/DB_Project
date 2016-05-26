@@ -25,6 +25,7 @@ def load_users_from_csv():
 
 def load_users_dict():
     try:
+
         with open(CSV_PATH, 'rb') as csvfile:
             csv_data = csv.DictReader(csvfile)
             for row in csv_data:

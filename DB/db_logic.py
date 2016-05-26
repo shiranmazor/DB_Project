@@ -31,6 +31,7 @@ class DBLogic():
 
     def get_user_id_by_name(self, full_name):
         try:
+
             cursor = self.db_obj.con.cursor()
             query = 'select id from users where full_name =%s'
             cursor.execute(query, (full_name,))
