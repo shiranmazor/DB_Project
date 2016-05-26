@@ -10,8 +10,10 @@ import sys
 import time
 from TwitterApi.twitter_api import *
 from DB.db_wrapper import *
+from DB.db_logic import *
 from ServerLogic.common import *
 import traceback
+import argparse
 
 def insert_new_data():
     print 'connecting to db'
@@ -61,7 +63,7 @@ def load_users_table(db_obj, twiter_obj):
             print traceback.format_exc()
     print 'done with Users table!'
 
-def load_Followers(db_obj,twiter_obj ):
+def load_Followers(db_obj,twiter_obj, db_logic ):
     '''
     scan all the users id in db from users table, for each user id:
     1. get followers list from twitter
@@ -77,7 +79,7 @@ def load_Followers(db_obj,twiter_obj ):
         request_counter_followers = 0
 
         # get all user_id from db
-        outputs = db_obj.get_userid_screen_name_db()
+        outputs = db_logic.get_userid_screen_name_db()
         ids_lst = [x['id'] for x in outputs]
         for output_id in outputs:
             try:
@@ -86,8 +88,8 @@ def load_Followers(db_obj,twiter_obj ):
                 print 'start inserting followers+ followees for user :{0}'.format(screen_name)
                 # get followers id
                 if request_counter_followers >= requests_limit_followers:
-                    print 'reaching request limit on followers ans friends sleeping for {0} seconds'.format(
-                        sleeping_time_followers)
+                    print 'reaching request limit on followers ans friends sleeping for {0} seconds from {1}'.\
+                        format(sleeping_time_followers, datetime.datetime.now())
                     request_counter_followers = 0
                     time.sleep(sleeping_time_followers)
 
@@ -102,7 +104,7 @@ def load_Followers(db_obj,twiter_obj ):
                 followee_id = user_id
                 for follower_id in followers_ids:
                     # check if follower is in our users:
-                    user_data = db_obj.get_user_data_by_twitter_id(twitter_id=follower_id)
+                    user_data = db_logic.get_user_data_by_twitter_id(twitter_id=follower_id)
                     if len(user_data) == 0:
                         continue
                     else:
@@ -120,7 +122,7 @@ def load_Followers(db_obj,twiter_obj ):
                 follower_id = user_id
                 for followee_id in followees_ids:
                     # check if followee is in our users:
-                    user_data = db_obj.get_user_data_by_twitter_id(twitter_id=followee_id)
+                    user_data = db_logic.get_user_data_by_twitter_id(twitter_id=followee_id)
                     if len(user_data) == 0:
                         continue
                     else:
@@ -140,13 +142,7 @@ def load_Followers(db_obj,twiter_obj ):
         print traceback.format_exc()
     print 'done with followers table!'
 
-def get_party_role_id(db_obj,screen_name):
-    role_name = users_data[screen_name]['role']
-    party_letter = users_data[screen_name]['party']
-    party_name = 'Democratic' if party_letter == 'D' else 'Republican'
-    party_out = db_obj.get_values_by_field(table_name = 'Party', field_name = 'party_name', field_value = party_name)
-    role_out = db_obj.get_values_by_field(table_name='Role', field_name='rol_name', field_value=role_name)
-    return party_out[0]['party_id'],role_out[0]['role_id']
+
 
 def load_party_data(db_obj):
     '''
@@ -179,7 +175,7 @@ def load_Role_data(db_obj):
         print traceback.format_exc()
 
 
-def load_tweets_all_users(db_obj , twiter_obj):
+def load_tweets_all_users(db_obj , twiter_obj, db_logic):
     '''
     this function geting all user ids fro db and load all tweets for all users
     also update tables - tweet_files, mentions
@@ -190,21 +186,22 @@ def load_tweets_all_users(db_obj , twiter_obj):
     sleeping_time = 60*20 #16minutes
     requests_limit = 150 # the limit is 180 requests
     request_counter = 0
-
-    if request_counter >= requests_limit:
-        request_counter = 0
-        print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit,sleeping_time)
-        time.sleep(sleeping_time)
-
     #get all users id and screen_name from db
-    users_info = db_obj.get_userid_screen_name_db()
-    request_counter+=1
+    users_info = db_logic.get_userid_screen_name_db()
     for user_info in users_info:
+        if request_counter >= requests_limit:
+            request_counter = 0
+            print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit, sleeping_time)
+            time.sleep(sleeping_time)
+
         user_db_id = user_info['id']
         screen_name = user_info['screen_name']
-        load_tweets_user(db_obj, twiter_obj, user_db_id, screen_name)
+        if screen_name == 'none':
+            continue
+        request_counter += 1
+        load_tweets_user(db_obj, twiter_obj, user_db_id, screen_name, db_logic)
 
-def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
+def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
     '''
     getting the last 500 tweets of the user by screen name and insert them to db
     fill in - Mentions table, tweets and tweet files
@@ -221,7 +218,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
         tweets_fields = ["text","date","url","User_id","tweet_id"]
         tweet_files_fields = ["file_type","file_url","Tweets_id"]
         mentions_fields = ["tagged_users_id","Tweet_id"]
-        users_id_screen_name = db_obj.get_userid_screen_name_db()
+        users_id_screen_name = db_logic.get_userid_screen_name_db()
         screen_names = [x['screen_name'] for x in users_id_screen_name]
 
         for tweet in user_tweets:
@@ -233,7 +230,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
 
                 tweet_values = [tweet["text"],tweet["time"],urls, user_db_id,tweet["tweet_id"]]
                 db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
-                db_tweet_id = db_obj.get_last_id_from_table('tweets')['id']
+                db_tweet_id = db_logic.get_last_id_from_table('tweets')[0]['last_id']
                 #tweet files table:
                 tweet_files = tweet['tweet_files']
                 for tweet_file in tweet_files:
@@ -243,12 +240,12 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
 
                 #finish deal with tweet files
                 ############mentions table:
-                ids,mentions_users = return_mentions_hoc_users(db_obj, tweet['mentions'], users_id_screen_name, screen_names)
+                ids,mentions_users = return_mentions_hoc_users( tweet['mentions'], users_id_screen_name, screen_names)
 
                 #search mentions in tweet text and add them to ids list
                 text = tweet['text']
                 for screen_name in screen_names:
-                    if screen_name in text:
+                    if str(screen_name) in text:
                         ids.append(get_id_by_screenname(screen_name, users_id_screen_name))
 
                 for user_id in ids:
@@ -262,41 +259,13 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name):
         print traceback.format_exc()
 
 
-def get_id_by_screenname(screen_name,users_id_screen_name):
-    for item in users_id_screen_name:
-        if item['screen_name'] == screen_name:
-            return item['id']
-
-def return_mentions_hoc_users(db_obj, mentions, users_id_screen_name, screen_names):
-    '''
-    get the mentions list and remove all the users that are not in db
-    :param db_obj:
-    :param mentions:
-    :return: two lists: user_ids, screen_names
-    '''
-    users_screen_names = []
-    ids = []
-
-    for name in mentions:
-        if name  in screen_names:
-            users_screen_names.append(name)
-    ids = [x['id'] for x in users_id_screen_name if x['screen_name'] in users_screen_names]
-    return ids , users_screen_names
 
 def update_data():
     pass
 
-def run():
-    db_obj = DbWrapper()
-    twiter_obj = Twitter_Api()
-    #load_party_data(db_obj)
-    #load_Role_data(db_obj)
-    #load_users_table(db_obj, twiter_obj)
-    load_Followers(db_obj, twiter_obj)
 
-def fill_db_from_screch():
-    db_obj = DbWrapper()
-    twiter_obj = Twitter_Api()
+def fill_db_from_screch(db_obj, twiter_obj, db_logic):
+
     print 'loading party table'
     load_party_data(db_obj)
     print 'loading role table'
@@ -304,11 +273,46 @@ def fill_db_from_screch():
     print 'loading users table'
     load_users_table(db_obj, twiter_obj)
     print 'loading followers'
-    load_Followers(db_obj, twiter_obj)
+    load_Followers(db_obj, twiter_obj, db_logic)
     print 'loading tweets table with tweet files and mentions on all users'
-    load_tweets_all_users(db_obj, twiter_obj)
+    load_tweets_all_users(db_obj, twiter_obj, db_logic)
     print 'finish loading table!'
+
+def main():
+    parser = argparse.ArgumentParser(description='Parse args for load data')
+    parser.add_argument('-t', dest="table", type= str, required = False,default='All')
+    parser.add_argument('-u', dest="update_table", type=str, required=False, default='All')
+    args =  parser.parse_args()
+
+    db_obj = DbWrapper()
+    db_logic = DBLogic(db_wrapper_obj=db_obj)
+    twiter_obj = Twitter_Api()
+
+    if args.table:
+        if args.table == 'All':
+            print 'filling all table in DB'
+            fill_db_from_screch(db_obj, twiter_obj, db_logic)
+        elif args.table.lower() == 'users':
+            print 'loading users table'
+            load_users_table(db_obj, twiter_obj)
+        elif args.table.lower() == 'followers':
+            print 'loading followers'
+            load_Followers(db_obj, twiter_obj, db_logic)
+        elif args.table.lower() == 'tweets':
+            print 'loading tweets table with tweet files and mentions on all users'
+            load_tweets_all_users(db_obj, twiter_obj, db_logic)
+        elif args.table.lower() == 'party':
+            print 'loading party table'
+            load_party_data(db_obj)
+        elif args.table.lower() == 'role':
+            print 'loading role table'
+            load_Role_data(db_obj)
+
+    db_obj.close_connection()
+
+
 
 
 if __name__ == '__main__':
-    fill_db_from_screch()
+    main()
+

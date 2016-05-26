@@ -64,10 +64,11 @@ class Twitter_Api():
 
 
 
-    def get_timeline_only(self,screen_name= None, user_id = None, count=200):
+    def get_timeline_only(self,screen_name= None, user_id = None, count=500, since_id = None):
         '''
         get only x last record of tweets from a specific screen name
         :param screen_name:
+        :param since_id: Returns results with an ID greater than (that is, more recent than) the specified ID.
         :param count:
         :return:list of dict : {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time,
          "urls":urls, "tweet_files":tweet_files_data}
@@ -75,9 +76,18 @@ class Twitter_Api():
         result=[]
         output_dict={}
         if screen_name:
-            output_dict = self.t.statuses.user_timeline(screen_name=screen_name, count=count, trim_user=True, include_rts=True)
+            if since_id:
+                output_dict = self.t.statuses.user_timeline(screen_name=screen_name, count=count, trim_user=True,
+                                                            include_rts=True, since_id=since_id)
+            else:
+                output_dict = self.t.statuses.user_timeline(screen_name=screen_name, count=count, trim_user=True,
+                                                    include_rts=True)
         elif user_id:
-            output_dict = self.t.statuses.user_timeline(user_id =user_id, count=count, trim_user=True,
+            if since_id:
+                output_dict = self.t.statuses.user_timeline(user_id=user_id, count=count, trim_user=True,
+                                                            include_rts=True, since_id=since_id)
+            else:
+                output_dict = self.t.statuses.user_timeline(user_id =user_id, count=count, trim_user=True,
                                                         include_rts=True)
         for item in output_dict:
             mentions = []
@@ -85,24 +95,29 @@ class Twitter_Api():
                                                      "%a %b %d %H:%M:%S %Y")
 
             text = item["text"].encode('utf-8')
+            #remove hex data from text:
+            text = remove_hexa_bytes(text)
             # Add twitter account tagged only if screen name exists in CSV
             urls = []
-            user_mentions = item['entities']['user_mentions']
-            tweet_urls = item['entities']["urls"]
-            for url_dict in tweet_urls:
-                urls.append(url_dict["url"])
+            user_mentions = []
+            if item['entities'].has_key("user_mentions"):
+                user_mentions = item['entities']['user_mentions']
+            if item['entities'].has_key("urls"):
+                tweet_urls = item['entities']["urls"]
+                for url_dict in tweet_urls:
+                    urls.append(url_dict["url"])
 
             mentions.extend(user_mentions)
-
             #get all pictures and media
             tweet_files_data = [] #list of dict with all the relevet fields
-            medias = item['entities']["media"]
-            for media in medias:
-                file_dict = {}
-                file_dict['file_url'] = media['media_url']
-                file_dict['file_type'] = media['type']
-                file_dict['tweet_id'] = media['id']
-                tweet_files_data.append(file_dict)
+            if  item['entities'].has_key("media"):
+                medias = item['entities']["media"]
+                for media in medias:
+                    file_dict = {}
+                    file_dict['file_url'] = media['media_url']
+                    file_dict['file_type'] = media['type']
+                    file_dict['tweet_id'] = media['id']
+                    tweet_files_data.append(file_dict)
 
             temp_dict = {"tweet_id": item["id"], "text": text, "mentions": mentions, "time": create_time, "urls":urls, "tweet_files":tweet_files_data}
             result.append(temp_dict)
@@ -161,7 +176,7 @@ class Twitter_Api():
             return {}
 
 
-    def get_user_followees(self, screen_name = None, user_id = None, count = 5000):
+    def get_user_followees(self, screen_name = None, user_id = None, count = 5000, cursor = False):
         '''
         return list of user ids the user is following - followees
         :param screen_name:
@@ -172,25 +187,48 @@ class Twitter_Api():
         ids = []
         output = {}
         if screen_name:
-            output = self.t.friends.ids(screen_name=screen_name, count=count)
+            output = self.t.friends.ids(screen_name=screen_name)
+            if len(output) > 0:
+                ids = output["ids"]
+                if cursor:
+                    c = output['next_cursor']
+                    while (c != 0):
+                        ids.extend(output["ids"])
+                        output = self.t.friends.ids(screen_name=screen_name, cursor = c)
         elif user_id:
             output = self.t.friends.ids(user_id=user_id, count=count)
-
-        if len(output) > 0:
-            ids = output["ids"]
+            if len(output) > 0:
+                ids = output["ids"]
+                if cursor:
+                    c = output['next_cursor']
+                    while (c != 0):
+                        ids.extend(output["ids"])
+                        output = self.t.friends.ids(user_id=user_id, cursor=c)
 
         return ids
 
-    def get_user_followers(self, screen_name = None, user_id = None, count = 5000):
+    def get_user_followers(self, screen_name = None, user_id = None, count = 5000, cursor = False):
         ids = []
         output = {}
         if screen_name:
-            output = self.t.followers.ids(screen_name=screen_name, count=count)
+            output = self.t.followers.ids(screen_name=screen_name)
+            if len(output) > 0:
+                ids = output["ids"]
+                if cursor:
+                    c = output['next_cursor']
+                    while (c != 0):
+                        ids.extend(output["ids"])
+                        output = self.t.followers.ids(screen_name=screen_name, cursor = c)
         elif user_id:
-            output = self.t.followers.ids(user_id=user_id, count=count)
+            output = self.t.followers.ids(user_id=user_id)
+            if len(output) > 0:
+                ids = output["ids"]
+                if cursor:
+                    c = output['next_cursor']
+                    while (c != 0):
+                        ids.extend(output["ids"])
+                        output = self.t.followers.ids(user_id=user_id,  cursor = c)
 
-        if len(output) > 0:
-            ids = output["ids"]
 
         return ids
 
