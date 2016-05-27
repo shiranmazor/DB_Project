@@ -146,9 +146,11 @@ class DBLogic():
         try:
             cursor = self.db_obj.con.cursor()
             query = '''
-            select u.id as id, u.screen_name as screen_name, u.full_name as full_name, p.party_name as party_name
-            from users as u, party as p
+            select u.id as id, u.screen_name as screen_name, u.full_name as full_name, u.location as state,
+             p.party_name as party_name, r.rol_name as role_name
+            from users as u, party as p, role as r
             where u.party_id = p.party_id
+            and u.role_id = r.role_id
             '''
             cursor.execute(query)
             columns = cursor.description
@@ -182,11 +184,11 @@ class DBLogic():
         try:
             cursor = self.db_obj.con.cursor()
             query = '''
-            select tagged_users_id
-            from mentions
-            where tweet_id = %s
+            select *
+            from searches
+            where user_id = %s
             '''
-            cursor.execute(query, (tweet_id,))
+            cursor.execute(query, (user_id,))
             columns = cursor.description
             result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
             cursor.close()
