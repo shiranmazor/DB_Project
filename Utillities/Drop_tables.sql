@@ -4,6 +4,8 @@ DROP TABLE Tweet_files;
 DROP TABLE Tweets;
 DROP TABLE Users;
 DROP TABLE Followers;
+DROP TABLE Party;
+DROP TABLE role;
 
 DELETE FROM Users;
 DELETE FROM Mentions;

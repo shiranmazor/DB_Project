@@ -2,11 +2,14 @@ import csv
 from consts import *
 import sys
 sys.path.append("../")
+from DB.db_wrapper import *
+from DB.db_logic import *
 
 name_to_screen = {}
 screen_to_name = {}
 users_data = {} #keys are "screen_name" values - list of all csv fields
-
+db_global_object  = DbWrapper()
+db_logic = DBLogic(db_wrapper_obj = db_global_object)
 
 
 def load_users_from_csv():

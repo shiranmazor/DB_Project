@@ -1,12 +1,10 @@
 import sys
 sys.path.append("../")
 
-from DB.db_wrapper import *
-from DB.db_logic import *
+
 from common import *
 
-db_global_object  = DbWrapper()
-db_logic = DBLogic(db_wrapper_obj = db_global_object)
+
 
 def get_user_data(full_name):
     '''
@@ -26,15 +24,32 @@ def get_user_data(full_name):
     user_output['role_name'] = role_out['rol_name']
 
     #get followers and friends names:
-    followers_out = db_logic.get_followers_name(user_id = user_output['id'])
     followees_out = db_logic.get_followees_name(user_id=user_output['id'])
-    followers = [x['full_name'] for x in followers_out]
+    user_output['followers_names'] = get_followers_names(user_id=user_output['id'])
     followees = [x['full_name'] for x in followees_out]
-    user_output['followers_names'] = followers
     user_output['followees_names'] = followees
 
     return user_output
 
+def get_followers_names(user_id = None, full_name = None):
+    if user_id:
+        followers_out = db_logic.get_followers_name(user_id=user_id)
+    elif full_name:
+        user_id = db_logic.get_user_id_by_name(full_name=full_name)
+        followers_out = db_logic.get_followers_name(user_id=user_id)
+
+    followers = [x['full_name'] for x in followers_out]
+    return followers
+
+def get_followees_names(user_id = None, full_name = None):
+    if user_id:
+        followees_out = db_logic.get_followers_name(user_id=user_id)
+    elif full_name:
+        user_id = db_logic.get_user_id_by_name(full_name=full_name)
+        followers_out = db_logic.get_followers_name(user_id=user_id)
+
+    followers = [x['full_name'] for x in followers_out]
+    return followers
 
 def get_user_list():
     '''
