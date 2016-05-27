@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../")
 from common import *
-
+import user_data
 
 def update_user_search(screen_name, search_date):
     try:
@@ -42,7 +42,22 @@ def get_popular_users(count = 10):
     :param count:
     :return:
     '''
-    pass
+    try:
+        output = []
+        popular_searches = db_logic.get_popular_searches(count=count)
+        #for each user get user_data
+        for search in popular_searches:
+            user_id = search['user_id']
+            #get user_id data
+            data = user_data.get_user_data(user_id=user_id)
+            output.append(data)
+
+        return output
+    except:
+        print traceback.format_exc()
+
+
+
 
 
 
