@@ -10,7 +10,7 @@ def get_shared_info(screen_name1, screen_name2):
     extrating all user data from db and comparing the all fields
     :param full_name1:
     :param full_name2:
-    :return:dict with keys of the shared values
+    :return:dict with keys of the shared values: party_name,rol_name, location,followers,followees
     '''
     shared_output = {}
     try:
@@ -28,7 +28,12 @@ def get_shared_info(screen_name1, screen_name2):
             shared_output['location'] = user1_output['location']
 
         #present shared members
-        shared_followers = get_shared_followers_from_users()
+        shared_followers = get_shared_followers_from_users(user1_output, user2_output)
+        shared_output["followers"] = shared_followers
+
+        shared_followews = get_shared_followees_from_users(user1_output, user2_output)
+        shared_output["followees"] = shared_followews
+
     except:
         return shared_output
     return shared_output
