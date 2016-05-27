@@ -9,6 +9,20 @@
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <script>
+    // assumption: dropdown names are "screen_name_1", "screen_name_2"
+
+        function validateSelection() {
+            //document.write(document.forms.selection.screen_name_1);
+            if (document.forms.selection.screen_name_1.value == document.forms.selection.screen_name_2.value) {
+                alert('Warning: chose same person twice');
+                document.forms.selection.submit.disabled = true;
+            }
+            else {
+                document.forms.selection.submit.disabled = false;
+            }
+        }
+    </script>
     <style>
         option {
             color:white;
@@ -51,15 +65,15 @@
 
     <div class="row marketing">
         <div class="col-lg-6">
-            <form action="bottom" target="bottom" method="post">
+            <form action="bottom" target="bottom" method="post" name="selection">
                 {%  for select in select_names %}
-                <select name="{{select}}">
+                <select name="{{select}}" onchange="validateSelection()">
                     {% for screen_name,real_name,party in users_tuples %}
                     <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
                     {% endfor %}
                 </select>
                 {% endfor %}
-                <button type="submit">Compare</button>
+                <button type="submit" name="submit">Compare</button>
             </form>
         </div>
 
