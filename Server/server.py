@@ -23,14 +23,12 @@ def send_static(path):
 def bottom():
     screen_name_1 = str(request.form['screen_name_1'])
     screen_name_2 = str(request.form['screen_name_2'])
-    html = get_friendship(screen_name_1, screen_name_2)
-    return html
+    return get_friendship(screen_name_1, screen_name_2)
 
 @application.route("/leftandright", methods = ['GET', 'POST'])
 def bottom():
     screen_name = str(request.form['screen_name'])
-    html = get_user_data(screen_name)
-    return html
+    return get_user_data(screen_name)
 
 @application.route("/test")
 def test():

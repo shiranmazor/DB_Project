@@ -49,8 +49,10 @@ def get_friendship(screen_name_1, screen_name_2):
             print traceback.format_exc()
     return html
 def get_user_data(screen_name):
-    html = "<br> <img src={0}> <br>".format(users_data[screen_name]["full_name"]["img"])
-    html = "<br />{0} is ".format(users_data[screen_name]["full_name"])
+    html = "<br /> <img src={0}>".format(users_data[screen_name]["full_name"]["profile_picture_url"])
+    html += "<br />{0} ".format(users_data[screen_name]["full_name"])
+    html += "<br />is a {0} ".format(users_data[screen_name]["role_name"])
+    html += "<br />from {0} ".format(users_data[screen_name]["location"])
     html += ""
     return html
 
