@@ -5,7 +5,9 @@ from common import *
 
 def update_user_search(screen_name, search_date):
     try:
-        #   check if the user exist in DB
+        #check if the user exist in DB
+        user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+
     except:
         pass
 

@@ -81,7 +81,7 @@ def get_user_list():
     output = {}
     users_output = db_logic.get_users_list_with_party()
     for user in users_output:
-        output[users_output['screen_name']] = user
+        output[user['screen_name']] = user
 
     return output
 

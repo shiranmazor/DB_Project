@@ -178,6 +178,24 @@ class DBLogic():
             print 'Error in selecting from db'
             print traceback.format_exc()
 
+    def get_searches_by_id(self, user_id):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select tagged_users_id
+            from mentions
+            where tweet_id = %s
+            '''
+            cursor.execute(query, (tweet_id,))
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()
+
     def get_tweet_files(self, tweet_id):
         try:
             cursor = self.db_obj.con.cursor()
