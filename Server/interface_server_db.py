@@ -48,5 +48,11 @@ def get_friendship(screen_name_1, screen_name_2):
         except:
             print traceback.format_exc()
     return html
+def get_user_data(screen_name):
+    html = "<br> <img src={0}> <br>".format(users_data[screen_name]["full_name"]["img"])
+    html = "<br />{0} is ".format(users_data[screen_name]["full_name"])
+    html += ""
+    return html
+
 def get_shared(screen_name_1):
     pass

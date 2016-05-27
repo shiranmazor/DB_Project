@@ -26,6 +26,12 @@ def bottom():
     html = get_friendship(screen_name_1, screen_name_2)
     return html
 
+@application.route("/leftandright", methods = ['GET', 'POST'])
+def bottom():
+    screen_name = str(request.form['screen_name'])
+    html = get_user_data(screen_name)
+    return html
+
 @application.route("/test")
 def test():
     return "<h1 style='color:blue'>YOYO!</h1>"
