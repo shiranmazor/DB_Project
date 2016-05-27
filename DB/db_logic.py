@@ -221,7 +221,8 @@ class DBLogic():
             cursor = self.db_obj.con.cursor()
             query = '''
             select * from searches
-            where count >= %s
+            order by count desc
+            limit %s
             '''
             cursor.execute(query, (count,))
             columns = cursor.description
