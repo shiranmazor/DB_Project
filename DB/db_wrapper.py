@@ -130,6 +130,20 @@ class DbWrapper():
 
 
 
-    def update_table(self, table_name, fields, values, condition_str):
-        pass
+    def update_table(self, table_name, fields, values, condition_str = None):
+        try:
+            cursor = self.con.cursor()
+            query = 'update {0} '.format(table_name)
+            for field, value in zip(fields, values):
+                query+= 'set {0}=%s, '.format(field)
 
+            query=query[:-1]
+            if condition_str:
+                query+= ' where '+condition_str
+
+            values_tuple=tuple(values)
+            cursor.execute(query, values_tuple)
+            self.con.commit()
+            cursor.close()
+        except:
+            print traceback.format_exc()

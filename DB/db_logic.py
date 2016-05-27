@@ -215,3 +215,20 @@ class DBLogic():
         except Exception as ex:
             print 'Error in selecting from db'
             print traceback.format_exc()
+
+    def get_popular_searches(self, count=10):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select * from searches
+            where count >= %s
+            '''
+            cursor.execute(query, (count,))
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()
