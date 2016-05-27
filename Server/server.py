@@ -5,7 +5,8 @@ import ServerLogic.user_data as ud
 from ServerLogic.friendship_data import *
 import traceback
 
-application = Flask(__name__, static_url_path = "/templates/static", static_folder = "static")
+
+application = Flask(__name__, static_url_path = "/templates/static", static_folder = "/static")
 users_data = ud.get_user_list()
 
 @application.route("/")
