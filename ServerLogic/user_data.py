@@ -6,50 +6,74 @@ from common import *
 
 
 
-def get_user_data(full_name):
+def get_user_data(full_name = None, screen_name = None):
     '''
     return user dict from users table
     :param full_name:
     :return: dict of: db_id,twitter_id, full_name,profile_picture_url location, followers_count,friends_count, description,
      followers_names (full_names), followees_names, role_name, party_name, role_id, party_id
     '''
-    user_output = db_global_object.get_values_by_field(table_name='Users', field_name = 'full_name', field_value = full_name)[0]
-    #extract role_name and party name:
-    pary_out = db_global_object.get_values_by_field(table_name='party', field_name = 'party_id', field_value = user_output['party_id'])[0]
-    user_output['party_name'] = pary_out['party_name']
+    try:
+        user_output = {}
+        if full_name:
+            user_output = db_global_object.get_values_by_field(table_name='Users', field_name = 'full_name', field_value = full_name)[0]
+        elif screen_name:
+            user_output = db_global_object.get_values_by_field(table_name='Users', field_name='screen_name', field_value=screen_name)[0]
 
-    # extract role_name and role name:
-    role_out = db_global_object.get_values_by_field(table_name='role', field_name='role_id',
-                                                    field_value=user_output['role_id'])[0]
-    user_output['role_name'] = role_out['rol_name']
+        #extract role_name and party name:
+        pary_out = db_global_object.get_values_by_field(table_name='party', field_name = 'party_id', field_value = user_output['party_id'])[0]
+        user_output['party_name'] = pary_out['party_name']
 
-    #get followers and friends names:
-    followees_out = db_logic.get_followees_name(user_id=user_output['id'])
-    user_output['followers_names'] = get_followers_names(user_id=user_output['id'])
-    followees = [x['full_name'] for x in followees_out]
-    user_output['followees_names'] = followees
+        # extract role_name and role name:
+        role_out = db_global_object.get_values_by_field(table_name='role', field_name='role_id',
+                                                        field_value=user_output['role_id'])[0]
+        user_output['role_name'] = role_out['rol_name']
 
-    return user_output
+        #get followers and friends names:
+        user_output['followers_names'] = get_followers_names(user_id=user_output['id'])
+        user_output['followees_names'] = get_followees_names(user_id=user_output['id'])
+        return user_output
+    except:
+        print 'problem in getting user data'
+        print traceback.format_exc()
+        return {}
 
-def get_followers_names(user_id = None, full_name = None):
-    if user_id:
-        followers_out = db_logic.get_followers_name(user_id=user_id)
-    elif full_name:
-        user_id = db_logic.get_user_id_by_name(full_name=full_name)
-        followers_out = db_logic.get_followers_name(user_id=user_id)
+def get_followers_names(user_id = None, full_name = None, screen_name = None):
+    try:
+        followers_out = {}
+        if user_id:
+            followers_out = db_logic.get_followers_name(user_id=user_id)
+        elif full_name:
+            user_id = db_logic.get_user_id_by_field(field_name='full_name', field_value=full_name)
+            followers_out = db_logic.get_followers_name(user_id=user_id)
+        elif screen_name:
+            user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+            followers_out = db_logic.get_followers_name(user_id=user_id)
 
-    followers = [x['full_name'] for x in followers_out]
-    return followers
+        followers = [x['full_name'] for x in followers_out]
+        return followers
+    except:
+        print traceback.format_exc()
+        return []
 
-def get_followees_names(user_id = None, full_name = None):
-    if user_id:
-        followees_out = db_logic.get_followers_name(user_id=user_id)
-    elif full_name:
-        user_id = db_logic.get_user_id_by_name(full_name=full_name)
-        followers_out = db_logic.get_followers_name(user_id=user_id)
+def get_followees_names(user_id = None, full_name = None, screen_name = None):
+    try:
+        followees_out = []
+        if user_id:
+            followees_out = db_logic.get_followees_name(user_id=user_id)
+        elif full_name:
+            user_id = db_logic.get_user_id_by_field(field_name='full_name',field_value=full_name )
+            followees_out = db_logic.get_followees_name(user_id=user_id)
+        elif screen_name:
+            user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+            followees_out = db_logic.get_followees_name(user_id=user_id)
 
-    followers = [x['full_name'] for x in followers_out]
-    return followers
+
+        followees = [x['full_name'] for x in followees_out]
+        return followees
+    except:
+        print traceback.format_exc()
+        return []
 
 def get_user_list():
     '''
@@ -61,20 +85,22 @@ def get_user_list():
     users_output = db_global_object.get_multiple_values_by_field(return_fileds,  table_name = 'users')
     return users_output
 
-def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None):
+def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None, screen_name = None):
     '''
-    return lasr
+    return last tweets
     :param user_id:
     :param count:
     :param from_date:
     :return:list of tweets contain: key1= tweet value=weet record, key2 = tweet_files, key3 = mentions
     '''
     output_lst = []
-    if not user_id and not full_name:
+    if not user_id and not full_name and not screen_name:
         print 'Error ! empty args'
         return None
     if full_name:
-        user_id = db_logic.get_user_id_by_name(full_name=full_name)
+        user_id = db_logic.get_user_id_by_field(field_name='full_name',field_value= full_name)
+    if screen_name:
+        user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
 
     #first get all tweets from db
     query = 'select * from tweets where user_id = %s '

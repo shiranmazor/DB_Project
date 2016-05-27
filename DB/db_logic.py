@@ -29,12 +29,12 @@ class DBLogic():
         outputs = self.db_obj.execute_generic_query(select_user_id)
         return outputs
 
-    def get_user_id_by_name(self, full_name):
+    def get_user_id_by_field(self, field_name, field_value):
         try:
 
             cursor = self.db_obj.con.cursor()
-            query = 'select id from users where full_name =%s'
-            cursor.execute(query, (full_name,))
+            query = 'select id from users where {0} =%s'.format(field_name)
+            cursor.execute(query, (field_value,))
             columns = cursor.description
             result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
             cursor.close()

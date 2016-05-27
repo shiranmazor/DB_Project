@@ -218,9 +218,10 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
         tweets_fields = ["text","date","url","User_id","tweet_id"]
         tweet_files_fields = ["file_type","file_url","Tweets_id"]
         mentions_fields = ["tagged_users_id","Tweet_id"]
-        users_id_screen_name = db_logic.get_userid_screen_name_db()
-        screen_names = [x['screen_name'] for x in users_id_screen_name]
-        user_ids = [x['id'] for x in users_id_screen_name]
+        users_id_screen_name_fullname = get_user_list()
+        screen_names = [x['screen_name'] for x in users_id_screen_name_fullname]
+        user_ids = [x['id'] for x in users_id_screen_name_fullname]
+        full_names = [x['full_name'] for x in users_id_screen_name_fullname]
 
         for tweet in user_tweets:
             try:
@@ -241,13 +242,13 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
 
                 #finish deal with tweet files
                 ############mentions table:
-                ids,mentions_users = return_mentions_hoc_users( tweet['mentions'], users_id_screen_name, screen_names)
+                ids,mentions_users = return_mentions_hoc_users( tweet['mentions'], users_id_screen_name_fullname, screen_names)
 
                 #search mentions in tweet text and add them to ids list
                 text = tweet['text']
-                for screen_name in screen_names:
-                    if str(screen_name) in text:
-                        ids.append(get_id_by_screenname(screen_name, users_id_screen_name))
+                for full_name in full_names:
+                    if str(full_name) in text:
+                        ids.append(get_id_by_full_name(full_name, users_id_screen_name_fullname))
 
                 for user_id in ids:
                     mention_values = [user_id, db_tweet_id]
@@ -315,5 +316,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    db_obj = DbWrapper()
+    db_logic = DBLogic(db_wrapper_obj=db_obj)
+    twiter_obj = Twitter_Api()
+
+    load_tweets_all_users(db_obj , twiter_obj, db_logic)
 

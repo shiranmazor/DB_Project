@@ -71,8 +71,17 @@ def str_replace(text, *params):
 def remove_hexa_bytes(data):
     return data.decode('unicode_escape').encode('ascii', 'ignore')
 
+def get_user_list():
+    '''
+    return a list of dict with : id, screen_name, full_name
+    :return:
+    '''
 
-def return_mentions_hoc_users( mentions, users_id_screen_name, screen_names):
+    return_fileds = ['id','screen_name','full_name']
+    users_output = db_global_object.get_multiple_values_by_field(return_fileds,  table_name = 'users')
+    return users_output
+
+def return_mentions_hoc_users( mentions, users_id_screen_name_fullname, screen_names):
     '''
     get the mentions list and remove all the users that are not in db
     :param mentions:
@@ -81,15 +90,15 @@ def return_mentions_hoc_users( mentions, users_id_screen_name, screen_names):
     users_screen_names = []
     ids = []
 
-    for name in mentions:
-        if name  in screen_names:
-            users_screen_names.append(name)
-    ids = [x['id'] for x in users_id_screen_name if x['screen_name'] in users_screen_names]
+    for item in mentions:
+        if str(item['name'])  in screen_names:
+            users_screen_names.append(str(item['name']))
+    ids = [x['id'] for x in users_id_screen_name_fullname if x['screen_name'] in users_screen_names]
     return ids , users_screen_names
 
-def get_id_by_screenname(screen_name,users_id_screen_name):
-    for item in users_id_screen_name:
-        if item['screen_name'] == screen_name:
+def get_id_by_full_name(full_name,users_id_screen_name_fullname):
+    for item in users_id_screen_name_fullname:
+        if item['full_name'] == full_name:
             return item['id']
 
 def get_party_role_id(db_obj,screen_name):
