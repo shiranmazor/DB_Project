@@ -220,6 +220,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
         mentions_fields = ["tagged_users_id","Tweet_id"]
         users_id_screen_name = db_logic.get_userid_screen_name_db()
         screen_names = [x['screen_name'] for x in users_id_screen_name]
+        user_ids = [x['id'] for x in users_id_screen_name]
 
         for tweet in user_tweets:
             try:

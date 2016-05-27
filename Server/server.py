@@ -3,7 +3,7 @@ import sys
 sys.path.append("../")
 from ServerLogic.common import *
 from ServerLogic.user_data import *
-from ServerLogic.freindship_data import *
+from ServerLogic.friendship_data import *
 
 application = Flask(__name__, static_url_path = "/templates/static", static_folder = "static")
 
