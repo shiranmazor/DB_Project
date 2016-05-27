@@ -44,10 +44,10 @@ class DbWrapper():
                 query+=key+','
 
             query = query[:-1]
-            query+='from '+table_name
+            query+=' from '+table_name
             if  field_name:
                 values_tuple = (field_value,)
-                query+='where '+field_name+'=%s'
+                query+=' where '+field_name+'=%s'
                 cursor.execute(query, values_tuple)
             else:
                 cursor.execute(query)
