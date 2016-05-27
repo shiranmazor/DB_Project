@@ -10,7 +10,7 @@ def get_shared_info(screen_name1, screen_name2):
     extrating all user data from db and comparing the all fields
     :param full_name1:
     :param full_name2:
-    :return:dict with keys of the shared values: party_name,rol_name, location,followers,followees
+    :return:dict with keys of the shared values: party_name, rol_name, location, followers, followees
     '''
     shared_output = {}
     try:
@@ -21,8 +21,8 @@ def get_shared_info(screen_name1, screen_name2):
         if user1_output['party_name'] == user2_output['party_name']:
             shared_output['party_name'] =user1_output['party_name']
 
-        if user1_output['rol_name'] == user2_output['rol_name']:
-            shared_output['rol_name'] = user1_output['rol_name']
+        if user1_output['role_name'] == user2_output['role_name']:
+            shared_output['role_name'] = user1_output['role_name']
         #location
         if user1_output['location'] == user2_output['location']:
             shared_output['location'] = user1_output['location']
