@@ -36,7 +36,7 @@ CREATE TABLE Tweet_files (
 -- Table: Tweets
 CREATE TABLE Tweets (
     id bigint AUTO_INCREMENT,
-    text text CHARACTER SET utf8 NOT NULL,
+    text text NOT NULL,
     date DATETIME NOT NULL,
     url text NOT NULL,
     User_id bigint NOT NULL,
