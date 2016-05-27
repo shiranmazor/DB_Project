@@ -10,6 +10,21 @@ application = Flask(__name__, static_url_path = "/templates/static", static_fold
 
 @application.route("/")
 def hello():
+
+    def create_sorted_tuples(*fields):
+        users_output = get_user_list()
+        keys = [x['screen_name'] for x in users_output]
+        result = []
+        for user in keys:
+            # print user
+            # print str(users_data)
+            temp = [users_data[user]["screen_name"]]
+            for field in fields:
+                temp.append(users_output[user][field])
+            result.append(temp)
+            # print str(temp)
+        return sorted(result, key=lambda item: item[1])
+
     data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
             "title": "Hello Mates", "users_tuples": create_sorted_tuples("real_name", "party"),
             "select_names": ["screen_name_1", "screen_name_2"]}
