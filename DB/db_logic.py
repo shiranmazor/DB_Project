@@ -72,6 +72,19 @@ class DBLogic():
         except:
             print traceback.format_exc()
 
+    def get_user_tweets(self, user_id):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = ('select * from tweets where user_id = %s ')
+            cursor.execute(query, (user_id, ))
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+        except:
+            print traceback.format_exc()
+
+
 
     def get_followers_name(self, user_id):
         '''
@@ -138,6 +151,42 @@ class DBLogic():
             where u.party_id = p.party_id
             '''
             cursor.execute(query)
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()
+
+    def get_mentions_userid(self, tweet_id):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select tagged_users_id
+            from mentions
+            where tweet_id = %s
+            '''
+            cursor.execute(query, (tweet_id,))
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()
+
+    def get_tweet_files(self, tweet_id):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select *
+            from tweet_files
+            where tweets_id = %s
+            '''
+            cursor.execute(query, (tweet_id,))
             columns = cursor.description
             result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
             cursor.close()

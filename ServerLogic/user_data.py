@@ -77,7 +77,7 @@ def get_followees_names(user_id = None, full_name = None, screen_name = None):
 
 def get_user_list():
     '''
-    return a list of dict with : id, screen_name, full_name
+    return a list of dict with : id, screen_name, full_name, party_name
     :return:
     '''
     users_output = db_logic.get_users_list_with_party()
