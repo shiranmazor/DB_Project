@@ -128,3 +128,21 @@ class DBLogic():
         except Exception as ex:
             print 'Error in selecting from db'
             print traceback.format_exc()
+
+    def get_users_list_with_party(self):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select u.id as id, u.screen_name as screen_name, u.full_name as full_name, p.party_name as party_name
+            from users as u, party as p
+            where u.party_id = p.party_id
+            '''
+            cursor.execute(query)
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            return result
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()
