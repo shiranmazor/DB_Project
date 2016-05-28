@@ -25,6 +25,8 @@ def get_friendship(screen_name_1, screen_name_2):
         shared_info = get_shared_info(screen_name_1, screen_name_2)
         html = ""
         html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"])
+        html_pattern_followers = "<br />{0} and {1} ".format(users_data[screen_name_1]["full_name"],
+                                                             users_data[screen_name_2]["full_name"])
         try:
             for key in shared_info.keys():
                 if key == "party_name":
@@ -33,20 +35,27 @@ def get_friendship(screen_name_1, screen_name_2):
                                          "Democratic", "Democrats"))
                 if key == "role_name":
                     html += (html_pattern + shared_info["role_name"] + "s")
+
                 if key == "location":
                     html += (html_pattern + "from " + shared_info["location"])
+
                 if key == "followers":
                     followers = shared_info["followers"]
                     followers = followers[0:100]
+                    count = len(followers)
                     followers = str(followers).strip('[]')
-                if followers != "":
-                        html += (html_pattern + "have the common followers: " + followers)
+                    if followers != "":
+                        if count > 1:
+                            html += (html_pattern_followers + "have the common followers: " + followers)
+                        else:
+                            html += (html_pattern_followers + "have the common follower: " + followers)
+
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
                     followees = str(followees).strip('[]')
                     if followees != "":
-                        html += (html_pattern + "and follow: " + followers)
+                        html += (html_pattern_followers + "and follow: " + followers)
         except:
             print traceback.format_exc()
     return html
@@ -79,8 +88,8 @@ def get_user_data(screen_name):
     html += ""
     return html
 
-def get_popular_searched():
-    searched_list = str(get_popular_users(3).strip('[]'))
+def get_popular_searched(count = 5):
+    searched_list = str(get_popular_users(count).strip('[]'))
     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     return "<br /> The most popular congress members searched, till {0} are: {1}".format(date, searched_list)
 
