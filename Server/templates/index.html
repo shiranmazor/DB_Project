@@ -70,14 +70,14 @@
 
         <form action="bottom" target="bottom" method="post" name="selection">
             <select name="screen_name_1" onchange="validateSelection()">
-                {% for screen_name,real_name,party in users_tuples %}
-                <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
+                {% for screen_name,full_name,party in users_tuples %}
+                <option value="{{screen_name}}" class="{{party}}">{{full_name}}</option>
                 {% endfor %}
             </select>
             <button type="submit" name="submit">Compare</button>
                         <select name="screen_name_2" onchange="validateSelection()">
-                {% for screen_name,real_name,party in users_tuples %}
-                <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
+                {% for screen_name,full_name,party in users_tuples %}
+                <option value="{{screen_name}}" class="{{party}}">{{full_name}}</option>
                 {% endfor %}
             </select>
         </form>
