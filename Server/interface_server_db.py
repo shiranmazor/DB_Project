@@ -43,19 +43,27 @@ def get_friendship(screen_name_1, screen_name_2):
                     followers = shared_info["followers"]
                     followers = followers[0:100]
                     count = len(followers)
-                    followers = str(followers).strip('[]')
-                    if followers != "":
+                    f = ""
+                    for follow in followers:
+                        f += str(follow) + ", "
+                    f = f[:-2]
+                    if f != "":
+                        f += "."
                         if count > 1:
-                            html += (html_pattern_followers + "have the common followers: " + followers)
+                            html += (html_pattern_followers + "have the common followers: " + f)
                         else:
-                            html += (html_pattern_followers + "have the common follower: " + followers)
+                            html += (html_pattern_followers + "have the common follower: " + f)
 
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
-                    followees = str(followees).strip('[]')
-                    if followees != "":
-                        html += (html_pattern_followers + "and follow: " + followers)
+                    f = ""
+                    for follow in followees:
+                        f += str(follow) + ", "
+                    f = f[:-2]
+                    if f != "":
+                        f += "."
+                        html += (html_pattern_followers + "and follow: " + f)
         except:
             print traceback.format_exc()
     return html
