@@ -4,7 +4,7 @@ from common import *
 
 
 
-def get_user_data(full_name = None, screen_name = None):
+def get_user_data(full_name = None, screen_name = None, user_id= None):
     '''
     return user dict from users table
     :param full_name:
@@ -16,6 +16,8 @@ def get_user_data(full_name = None, screen_name = None):
         if full_name:
             user_output = db_global_object.get_values_by_field(table_name='Users', field_name = 'full_name', field_value = full_name)[0]
         elif screen_name:
+            user_output = db_global_object.get_values_by_field(table_name='Users', field_name='screen_name', field_value=screen_name)[0]
+        elif user_id:
             user_output = db_global_object.get_values_by_field(table_name='Users', field_name='screen_name', field_value=screen_name)[0]
 
         #extract role_name and party name:
