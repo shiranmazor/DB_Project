@@ -25,10 +25,12 @@ def bottom():
     screen_name_2 = str(request.form['screen_name_2'])
     return get_friendship(screen_name_1, screen_name_2)
 
+'''
 @application.route("/leftandright", methods = ['GET', 'POST'])
 def bottom():
     screen_name = str(request.form['screen_name'])
     return get_user_data(screen_name)
+'''
 
 @application.route("/test")
 def test():
