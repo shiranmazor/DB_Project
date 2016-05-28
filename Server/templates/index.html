@@ -24,6 +24,18 @@
         }
     </script>
     <style>
+
+    html, body
+{
+    height: 100%;
+    width: 100%;
+}
+
+
+        div, span {
+        float:left;
+        overflow:hidden;
+        }
         option {
             color:white;
             background-color:black;
@@ -35,56 +47,60 @@
             background-color:maroon;
         }
 
+
     </style>
 
 </head>
 
 <body>
-<img src="{{ url_for('static', filename = 'logo.gif') }}" width="200" height="85">
-<div class="container">
-    <div class="header">
-        <nav>
-            <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="#">Home</a>
-                </li>
-                <li role="presentation"><a href="#">Sign In</a>
-                </li>
-                <li role="presentation"><a href="showSignUp">Sign Up</a>
-                </li>
-            </ul>
-        </nav>
-        <h3 class="text-muted">Python Flask App</h3>
-    </div>
 
-    <div class="jumbotron">
-        <h1>{{title}}</h1>
-        <p class="lead"></p>
-        <p><a class="btn btn-lg btn-success" href="showSignUp" role="button">Sign up today</a>
-        </p>
-    </div>
+<header style="background:yellow">
+    header
+</header>
 
-    <div class="row marketing">
-        <div class="col-lg-6">
-            <form action="bottom" target="bottom" method="post" name="selection">
-                {%  for select in select_names %}
-                <select name="{{select}}" onchange="validateSelection()">
-                    {% for screen_name,real_name,party in users_tuples %}
-                    <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
-                    {% endfor %}
-                </select>
+
+
+<div style="height:75%;width:33.333%;background:lime" name="middle_left">
+    left person
+</div>
+
+<div style="height:75%;width:33.333%;background:pink" name="middle_center">
+
+
+
+        <form action="bottom" target="bottom" method="post" name="selection">
+            <select name="screen_name_1" onchange="validateSelection()">
+                {% for screen_name,real_name,party in users_tuples %}
+                <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
                 {% endfor %}
-                <button type="submit" name="submit">Compare</button>
-            </form>
-        </div>
+            </select>
+            <button type="submit" name="submit">Compare</button>
+                        <select name="screen_name_2" onchange="validateSelection()">
+                {% for screen_name,real_name,party in users_tuples %}
+                <option value="{{screen_name}}" class="{{party}}">{{real_name}}</option>
+                {% endfor %}
+            </select>
+        </form>
 
-    </div>
+    <br />
+        <iframe name="bottom" ></iframe>
 
-    <footer class="footer">
-        <p>&copy; Company 2015</p>
-        <iframe name="bottom" />
-    </footer>
+
+
+
 
 </div>
+
+<div style="height:75%;width:33.333%;background:black;" name="middle_righr">
+    right person
+</div>
+
+
+<footer style="background:orange" name="footer">
+    footer
+</footer>
+
+
 </body>
 
 </html>
