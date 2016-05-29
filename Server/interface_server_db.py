@@ -6,9 +6,9 @@ import traceback
 
 def create_tuples(*fields):
     '''
-        extrating user data from db with selected fields, sorted by the second parameter (which should be full_name)
-        :param fields:
-        :return:sorted list with the chosen fields, th key is screen_name
+    extrating user data from db with selected fields, sorted by the second parameter (which should be full_name)
+    :param fields:
+    :return:sorted list with the chosen fields, th key is screen_name
     '''
     try:
         users_data = ud.get_user_list()
@@ -65,7 +65,7 @@ def get_friendship(screen_name_1, screen_name_2):
                         if count > 1:
                             html += (html_pattern_followers + "have the common followers: " + f)
                         else:
-                            html += (html_pattern_followers + "have the common follower: " + f)
+                            html += (html_pattern_followers + "have one common follower: " + f)
 
                 if key == "followees":
                     followees = shared_info["followees"]
