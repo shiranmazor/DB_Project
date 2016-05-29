@@ -4,10 +4,9 @@ from ServerLogic.searches_logic import *
 from time import gmtime, strftime
 import traceback
 
-users_data = ud.get_user_list()
-
 def create_tuples(*fields):
     try:
+        users_data = ud.get_user_list()
         result = []
         for user in users_data.keys():
             temp = [users_data[user]["screen_name"]]
@@ -22,6 +21,7 @@ def get_friendship(screen_name_1, screen_name_2):
     if screen_name_1 == screen_name_2:
         html = "<br />You chose to compare the same person! Please choose different persons"
     else:
+        users_data = ud.get_user_list()
         shared_info = get_shared_info(screen_name_1, screen_name_2)
         html = ""
         html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"])
@@ -76,23 +76,34 @@ def get_shared_tweets(screen_name_1, screen_name_2):
     count = 1
     for tweet in shared_tweets:
         tweets +="<br /> " + str(count) + ". " + str(tweet)
+        count += 1
     return "<br /> The shared Tweets are: " + tweets
 
 def get_tweets_user_mentions(screen_name_1, screen_name_2):
+    users_data = ud.get_user_list()
     shared = get_shared_tweets(screen_name_1, screen_name_2)
 
     user1_mentions = shared[1]
     user1_mentions = user1_mentions[0:10]
-    user1_mentions = str(user1_mentions).strip('[]')
+    mention1 = ""
+    count = 1
+    for mention in user1_mentions:
+        mention1 += "<br /> " + str(count) + ". " + str(mention)
+        count += 1
 
     user2_mentions = shared[2]
     user2_mentions = user2_mentions[0:10]
-    user2_mentions = str(user2_mentions).strip('[]')
 
-    return "<br /> {0} was mentioned in: {1}. {2} was mentioned in: {3}".format(users_data[screen_name_2]["full_name"], user1_mentions, users_data[screen_name_1]["full_name"], user2_mentions)
+    mention2 = ""
+    count = 1
+    for mention in user2_mentions:
+        mention2 += "<br /> " + str(count) + ". " + str(mention)
+        count += 1
 
+    return "<br /> {0} was mentioned in: {1}. {2} was mentioned in: {3}".format(users_data[screen_name_2]["full_name"], mention1, users_data[screen_name_1]["full_name"], mention2)
 
 def get_user_data(screen_name):
+    users_data = ud.get_user_list()
     html = "<br /> <img src={}>".format(users_data[screen_name]["profile_picture_url"])
     html += "<br />{} ".format(users_data[screen_name]["full_name"])
     html += "<br />is a {} ".format(users_data[screen_name]["role_name"])
