@@ -5,6 +5,11 @@ from time import gmtime, strftime
 import traceback
 
 def create_tuples(*fields):
+    '''
+        extrating user data from db with selected fields, sorted by the second parameter (which should be full_name)
+        :param fields:
+        :return:sorted list with the chosen fields, th key is screen_name
+    '''
     try:
         users_data = ud.get_user_list()
         result = []
@@ -17,7 +22,15 @@ def create_tuples(*fields):
     except:
         print traceback.format_exc()
 
+
 def get_friendship(screen_name_1, screen_name_2):
+    '''
+    this function generates an html text that gives all the shared data of the two given screen names.
+    including: party, role, location, followers and followees
+    :param screen_name_1:
+    :param screen_name_2:
+    :return:html text as described up
+    '''
     if screen_name_1 == screen_name_2:
         html = "<br />You chose to compare the same person! Please choose different persons"
     else:
@@ -68,10 +81,17 @@ def get_friendship(screen_name_1, screen_name_2):
             print traceback.format_exc()
     return html
 
-def get_shared_tweets(screen_name_1, screen_name_2):
-    shared = get_shared_tweets(screen_name_1, screen_name_2)
+def get_shared_tweets(screen_name_1, screen_name_2,number):
+    '''
+    this function generates an html text that gives the number (default=20) of shared tweets of the two given screen names.
+    :param screen_name_1:
+    :param screen_name_2:
+    :param num:
+    :return:html text as described up
+    '''
+    shared = get_shared_tweets(screen_name_1, screen_name_2, number=20)
     shared_tweets = shared[0]
-    shared_tweets = shared_tweets[0:20]
+    shared_tweets = shared_tweets[0:num]
     tweets = ""
     count = 1
     for tweet in shared_tweets:
@@ -79,12 +99,19 @@ def get_shared_tweets(screen_name_1, screen_name_2):
         count += 1
     return "<br /> The shared Tweets are: " + tweets
 
-def get_tweets_user_mentions(screen_name_1, screen_name_2):
+def get_tweets_user_mentions(screen_name_1, screen_name_2, number=10):
+    '''
+    this function generates an html text that gives the number (default=10) of mentions in tweets of the two given screen names.
+    :param screen_name_1:
+    :param screen_name_2:
+    :param num:
+    :return:html text as described up
+    '''
     users_data = ud.get_user_list()
     shared = get_shared_tweets(screen_name_1, screen_name_2)
 
     user1_mentions = shared[1]
-    user1_mentions = user1_mentions[0:10]
+    user1_mentions = user1_mentions[0:number]
     mention1 = ""
     count = 1
     for mention in user1_mentions:
@@ -92,7 +119,7 @@ def get_tweets_user_mentions(screen_name_1, screen_name_2):
         count += 1
 
     user2_mentions = shared[2]
-    user2_mentions = user2_mentions[0:10]
+    user2_mentions = user2_mentions[0:number]
 
     mention2 = ""
     count = 1
@@ -103,6 +130,11 @@ def get_tweets_user_mentions(screen_name_1, screen_name_2):
     return "<br /> {0} was mentioned in: {1}. {2} was mentioned in: {3}".format(users_data[screen_name_2]["full_name"], mention1, users_data[screen_name_1]["full_name"], mention2)
 
 def get_user_data(screen_name):
+    '''
+    this function generates an html text that gives personal data of the given screen name: profile pic, name, role and location.
+    :param screen_name:
+    :return:html text as described up
+    '''
     users_data = ud.get_user_list()
     html = "<br /> <img src={}>".format(users_data[screen_name]["profile_picture_url"])
     html += "<br />{} ".format(users_data[screen_name]["full_name"])
@@ -112,11 +144,21 @@ def get_user_data(screen_name):
     return html
 
 def get_popular_searched(count = 5):
+    '''
+    this function generates an html text that shows the most popular searches in our application (default=5), and date of update.
+    :param count:
+    :return:html text as described up
+    '''
     searched_list = str(get_popular_users(count).strip('[]'))
     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     return "<br /> The most popular congress members searched, till {0} are: {1}".format(date, searched_list)
 
 def update_search(screen_name):
+    '''
+    this function updates a search of a give screen_name in the db, including the date of selection.
+    :param screen_name:
+    :return:NONE
+    '''
     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     update_user_search(screen_name, date)
     return
