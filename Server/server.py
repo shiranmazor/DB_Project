@@ -10,9 +10,12 @@ application = Flask(__name__, static_url_path = "/templates/static", static_fold
 @application.route("/")
 def hello():
     #print str(create_tuples("full_name", "party_name"))
-    data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
-            "title": "Hello Mates", "users_tuples": create_tuples("full_name", "party_name"),
-            "select_names": ["screen_name_1", "screen_name_2"]}
+    tuples = create_tuples("full_name", "party_name")
+    data = ""
+    if tuples[1] == 0:
+        data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
+                "title": "Hello Mates", "users_tuples": create_tuples("full_name", "party_name")[0],
+                "select_names": ["screen_name_1", "screen_name_2"]}
     return render_template('index.html', **data)
 
 @application.route('/static/<path:path>')
@@ -23,7 +26,11 @@ def send_static(path):
 def bottom():
     screen_name_1 = str(request.form['screen_name_1'])
     screen_name_2 = str(request.form['screen_name_2'])
-    return get_friendship(screen_name_1, screen_name_2)
+    friendship = get_friendship(screen_name_1, screen_name_2)
+    if friendship[1] == 0:
+        return friendship[0]
+    else:
+        return "ERROR!" + friendship[0]
 
 '''
 @application.route("/leftandright", methods = ['GET', 'POST'])
