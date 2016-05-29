@@ -196,7 +196,7 @@ def get_popular_searched(count = 5):
         searched_list = str(get_popular_users(count).strip('[]'))
         date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-        return "<br /> The most popular congress members searched, till {0} are: {1}".format(date, searched_list), 0
+        return "<br /> The most popular congress members searched, till {0} are: {1}".format(get_date(), searched_list), 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -208,9 +208,14 @@ def update_search(screen_name):
     :return:error message in case of error, error code
     '''
     try:
-        date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        update_user_search(screen_name, date)
+        update_user_search(screen_name, get_date())
         return "", 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
+
+'''
+helper functions
+'''
+def get_date():
+    return strftime("%Y-%m-%d %H:%M:%S", gmtime())
