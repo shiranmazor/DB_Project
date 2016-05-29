@@ -100,7 +100,7 @@ def get_friendship(screen_name_1, screen_name_2):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def get_shared_tweets(screen_name_1, screen_name_2,number):
+def get_tweets_shared(screen_name_1, screen_name_2,number):
     '''
     this function generates an html text that gives the number (default=20)
     of shared tweets of the two given screen names.
