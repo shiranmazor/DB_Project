@@ -143,7 +143,8 @@ def get_tweets_user_mentions(screen_name_1, screen_name_2, number=10):
 
 def get_user_data(screen_name):
     '''
-    this function generates an html text that gives personal data of the given screen name: profile pic, name, role and location.
+    this function generates an html text that gives personal data of the given screen name:
+    profile picture, name, role, location and latest user's tweet.
     :param screen_name:
     :return:html text as described up
     '''
