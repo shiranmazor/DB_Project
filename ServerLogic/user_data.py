@@ -128,7 +128,7 @@ def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None
     cursor.close()
 
     for tweet in user_tweets:
-        tweet_dict ={}
+        tweet_dict = {}
         tweet_dict['tweet'] = tweet
         tweet_files = get_tweet_files(tweet['id'])
         tweet_mentions = get_tweet_mentions(tweet['id'])
@@ -136,7 +136,7 @@ def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None
         tweet_dict['mentions'] = tweet_mentions
         output_lst.append(tweet_dict)
 
-    return  output_lst
+    return output_lst
 
 def get_tweet_files(tweet_id):
     files_out = db_global_object.get_values_by_field( table_name = 'tweet_files', field_name = 'tweets_id', field_value = tweet_id)
