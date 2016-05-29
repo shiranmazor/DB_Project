@@ -72,7 +72,11 @@ def get_shared_tweets(screen_name_1, screen_name_2):
     shared = get_shared_tweets(screen_name_1, screen_name_2)
     shared_tweets = shared[0]
     shared_tweets = shared_tweets[0:20]
-    return "<br /> The shared Tweets are: ".format(str(shared_tweets).strip('[]'))
+    tweets = ""
+    count = 1
+    for tweet in shared_tweets:
+        tweets +="<br /> " + str(count) + ". " + str(tweet)
+    return "<br /> The shared Tweets are: " + tweets
 
 def get_tweets_user_mentions(screen_name_1, screen_name_2):
     shared = get_shared_tweets(screen_name_1, screen_name_2)
