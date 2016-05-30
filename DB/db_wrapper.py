@@ -134,12 +134,12 @@ class DbWrapper():
 
 
 
-    def update_table(self, table_name, fields, values, condition_str = None):
+    def update_table(self, table_name, fields, values, condition_str = None, type = str):
         try:
             cursor = self.con.cursor()
-            query = 'update {0} '.format(table_name)
+            query = 'update {0} '.format(table_name) + 'set '
             for field, value in zip(fields, values):
-                query+= 'set {0}=%s, '.format(field)
+                query+= '{0}=%s, '.format(field)
 
             query=query[:-2]
             if condition_str:
