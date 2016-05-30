@@ -4,6 +4,12 @@ from common import *
 import user_data
 
 def update_user_search(screen_name, search_date):
+    '''
+
+    :param screen_name:
+    :param search_date: type = datetime
+    :return:
+    '''
     try:
         #check if the user exist in DB
         user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)

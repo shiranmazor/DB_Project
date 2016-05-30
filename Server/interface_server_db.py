@@ -138,8 +138,6 @@ def update_user(screen_name, from_date):
     user_id = ud.db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
     #
     upd.update_user_tweet(user_db_id = user_id, screen_name = screen_name, from_date = from_date)
-    #call get_user_data
-    return get_user_data(screen_name=screen_name)
 
 
 def get_related_tweets(screen_name_1, screen_name_2,number = 20):
