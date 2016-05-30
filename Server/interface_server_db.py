@@ -58,9 +58,12 @@ def get_friendship(screen_name_1, screen_name_2):
             html_followers = ""
             html_followees = ""
             html_location = ""
+            html_tweets = get_related_tweets(screen_name_1, screen_name_2)
             for key in shared_info.keys():
                 if key == "party_name":
-                    html_party = "<br />They both a {0} representatives.".format(shared_info["party_name"])
+                    html_party = "<br />Both are {0}.".format(shared_info["party_name"])
+                    if shared_info["party_name"] in LOGOS:
+                        html_party = "<img src='{0}' style='width:30px;height:auto' />".format(LOGOS[shared_info["party_name"]]) + html_party
 
                 if key == "role_name":
                     html_role = "<br />They are {0}s.".format(shared_info["role_name"])
@@ -103,11 +106,11 @@ def get_friendship(screen_name_1, screen_name_2):
                     elif count == 1:
                         html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
         if html_role == "" and html_location == "" and html_party == ""\
-            and html_followers == "" and html_followees == "":
+            and html_followers == "" and html_followees == "" and html_tweets == "":
             return "<br /> There is no shared information between {0} and {1}!"\
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
-            return html_prev + html_location + html_party + html_role + html_followers + html_followees, 0
+            return html_prev + html_location + html_party + html_role + html_followers + html_followees + html_tweets, 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -165,8 +168,8 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
 
 
         for tweet_item in user1_mention2_tweets:
-            tweet_text = tweet_item['text'].encode('utf-8')
-            data+="<br /> {0}, {1} : {2}".format(tweet_item['screen_name'],tweet_item['date'],tweet_text)
+            #tweet_text = tweet_item['text'].encode('utf-8')
+            data+="<br /> {0}, {1} : {2}".format(tweet_item['screen_name'],tweet_item['date'],tweet_item['text'].encode('utf-8'))
 
         return data
     except:
@@ -215,7 +218,7 @@ def get_user_data(screen_name):
         html =        "<!DOCTYPE html>\
         <html lang='en'><body><center>"
 
-        html += "<br /><a href='https://twitter.com/{}' target='_blank'><img src='https://twitter.com/{}/profile_image?size=original' style='border-radius: 50%;width:100px;height:auto' /></a>".format(screen_name, screen_name)
+        html += "<br /><a href='https://twitter.com/{}' target='_blank'><img src='https://twitter.com/{}/profile_image?size=original' style='border-radius: 50%;width:150px;height:auto' /></a>".format(screen_name, screen_name)
 
 
         html += "<br />{} ".format(user_data["full_name"])
@@ -228,6 +231,8 @@ def get_user_data(screen_name):
         last_tweet = format_tweet(last_tweets)
         html += "<br /> <br />Last tweet: {} "\
             .format(str(last_tweet))
+
+        update_search(screen_name)
 
         return html + "</center></body></html>", 0
     except:
