@@ -73,7 +73,10 @@ def get_friendship(screen_name_1, screen_name_2):
                     f = ""
 
                     for follow in followers:
-                        f += str(follow) + ", "
+                        try:
+                            f += str(follow) + ", "
+                        except:
+                            pass
                     f = f[:-2]
                     if f != "":
                         f += "."
@@ -89,7 +92,10 @@ def get_friendship(screen_name_1, screen_name_2):
                     f = ""
 
                     for follow in followees:
-                        f += str(follow) + ", "
+                        try:
+                            f += str(follow) + ", "
+                        except:
+                            pass
                     f = f[:-2]
 
                     if f != "":
@@ -171,11 +177,11 @@ def get_user_data(screen_name):
     :return:html text as described up, error code
     '''
     try:
-        users_data = ud.get_user_list()
-        html = "<br /> <img src={}>".format(users_data[screen_name]["profile_picture_url"])
-        html += "<br />{} ".format(users_data[screen_name]["full_name"])
-        html += "<br />Is a {} ".format(users_data[screen_name]["role_name"])
-        html += "<br />From {} ".format(users_data[screen_name]["location"])
+        user_data = ud.get_user_data(screen_name=screen_name)
+        html = "<br /> <img src={}>".format(user_data["profile_picture_url"])
+        html += "<br />{} ".format(user_data["full_name"])
+        html += "<br />Is a {} ".format(user_data["role_name"])
+        html += "<br />From {} ".format(user_data["location"])
         html += "<br /> <br />Last tweet: {} "\
             .format(str(get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']))
 

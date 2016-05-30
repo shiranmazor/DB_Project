@@ -31,8 +31,8 @@ def get_shared_info(screen_name1, screen_name2):
         shared_followers = get_shared_followers_from_users(user1_output, user2_output)
         shared_output["followers"] = shared_followers
 
-        shared_followews = get_shared_followees_from_users(user1_output, user2_output)
-        shared_output["followees"] = shared_followews
+        shared_followees = get_shared_followees_from_users(user1_output, user2_output)
+        shared_output["followees"] = shared_followees
 
     except:
         return shared_output
