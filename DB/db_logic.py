@@ -233,3 +233,26 @@ class DBLogic():
         except Exception as ex:
             print 'Error in selecting from db'
             print traceback.format_exc()
+
+    def get_last_tweet_date(self,screen_name):
+        try:
+            cursor = self.db_obj.con.cursor()
+            query = '''
+            select max(t.date) as date
+            from tweets as t, users as u
+            where t.user_id = u.id
+            and u.screen_name = %s
+            '''
+            values = (screen_name,)
+            cursor.execute(query, values)
+            columns = cursor.description
+            result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+            cursor.close()
+            if len(result) > 0:
+                return result[0]['date']
+            else:
+                return None
+
+        except Exception as ex:
+            print 'Error in selecting from db'
+            print traceback.format_exc()

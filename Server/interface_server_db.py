@@ -108,6 +108,19 @@ def get_friendship(screen_name_1, screen_name_2):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
+def update_all_users():
+    try:
+        users_data = ud.get_user_list()
+        for user_data in users_data:
+            sn = users_data[user_data]["screen_name"]
+            #get last tweet date
+            last_date = ud.db_logic.get_last_tweet_date(screen_name=sn)
+            update_user(screen_name=sn, from_date=last_date)
+            return True
+    except:
+        return False
+
+
 
 def update_user(screen_name, from_date):
     '''
