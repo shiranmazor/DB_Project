@@ -47,7 +47,7 @@ def load_users_table(db_obj, twiter_obj):
 
                 #getting rol_id and party_id value
                 party_id, role_id = get_party_role_id(db_obj, screen_name)
-
+                user_full_name = users_data['full_name']
                 values = [user_output['full_name'], user_output['screen_name'], user_output['description'],
                           user_output['location'], user_output['followers_count'], user_output['friends_count'],
                           user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
