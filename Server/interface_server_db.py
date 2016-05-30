@@ -1,8 +1,9 @@
 import ServerLogic.user_data as ud
-from ServerLogic.friendship_data import *
-from ServerLogic.searches_logic import *
+import ServerLogic.friendship_data as fd
+import ServerLogic.searches_logic as sd
 from time import gmtime, strftime
 import traceback
+from ServerLogic.common import *
 
 '''
 Every function in this module return a tuple of 2:
@@ -47,7 +48,7 @@ def get_friendship(screen_name_1, screen_name_2):
             html = "<br />You chose to compare the same person! Please choose different persons"
         else:
             users_data = ud.get_user_list()
-            shared_info = get_shared_info(screen_name_1, screen_name_2)
+            shared_info = fd.get_shared_info(screen_name_1, screen_name_2)
             html = ""
 
             html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["full_name"],
@@ -106,7 +107,41 @@ def get_friendship(screen_name_1, screen_name_2):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def get_tweets_shared(screen_name_1, screen_name_2,number):
+def get_related_tweets(screen_name_1, screen_name_2,number = 20):
+    '''
+    return user1 and user2 tweets that mentions each other in time line format
+    screen_name, Date:tweet text
+    Screen_name, Date :tweet text
+    :param screen_name_1:
+    :param screen_name_2:
+    :param number:
+    :return:
+    '''
+    data = ''
+    try:
+        sorted_lst = []
+        shared = fd.get_shared_tweets(screen_name_1, screen_name_2)
+        shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets = shared
+        user1_mention2_tweets = user1_mention2_tweets[:number]
+        user2_mention1_tweets = user2_mention1_tweets[:number]
+
+        user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
+        user2_mention1_tweets = sorted(user2_mention1_tweets, lambda x: x['date'])
+        #merge tweets by date
+        for user1_t, user2_t in zip(user1_mention2_tweets,user2_mention1_tweets):
+            if user1_t['date'] < user2_t['date']:
+                sorted_lst.append(user1_t)
+            else:
+                sorted_lst.append(user2_t)
+
+        for tweet_item in sorted_lst:
+            data+="<br /> " + str(tweet_item['screen_name']) + ", " + str(tweet_item['date'])+ ": "+ str(tweet_item['text'])
+
+    except:
+        print traceback.format_exc()
+        return traceback.format_exc(), 1
+
+def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
     '''
     this function generates an html text that gives the number (default=20)
     of shared tweets of the two given screen names.
@@ -115,10 +150,12 @@ def get_tweets_shared(screen_name_1, screen_name_2,number):
     :param num:
     :return:html text as described up, error code
     '''
+    data = ''
     try:
-        shared = get_shared_tweets(screen_name_1, screen_name_2, number=20)
+        shared = fd.get_shared_tweets(screen_name_1, screen_name_2)
         shared_tweets = shared[0]
-        shared_tweets = shared_tweets[0:num]
+        shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets  = shared
+        shared_tweets = shared_tweets[0:number]
 
         tweets = ""
         count = 1
@@ -143,7 +180,7 @@ def get_tweets_user_mentions(screen_name_1, screen_name_2, number=10):
     '''
     try:
         users_data = ud.get_user_list()
-        shared = get_shared_tweets(screen_name_1, screen_name_2)
+        shared = fd.get_shared_tweets(screen_name_1, screen_name_2)
 
         user1_mentions = shared[1]
         user1_mentions = user1_mentions[0:number]
@@ -243,7 +280,7 @@ def update_search(screen_name):
     :return:error message in case of error, error code
     '''
     try:
-        update_user_search(screen_name, get_date())
+        sd.update_user_search(screen_name, get_date())
         return "", 0
     except:
         print traceback.format_exc()
