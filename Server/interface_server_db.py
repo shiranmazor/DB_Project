@@ -182,8 +182,9 @@ def get_user_data(screen_name):
         html += "<br />{} ".format(user_data["full_name"])
         html += "<br />Is a {} ".format(user_data["role_name"])
         html += "<br />From {} ".format(user_data["location"])
+        last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
         html += "<br /> <br />Last tweet: {} "\
-            .format(str(get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']))
+            .format(str(last_tweet))
 
         return html, 0
     except:
