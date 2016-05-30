@@ -21,6 +21,31 @@
                 document.forms.selection.submit.disabled = false;
             }
         }
+
+        function post(path, target, params, method) {
+        method = method || "post"; // Set method to post by default if not specified.
+
+        // The rest of this code assumes you are not using a library.
+        // It can be made less wordy if you use one.
+        var form = document.createElement("form");
+        form.setAttribute("method", method);
+        form.setAttribute("target", target);
+        form.setAttribute("action", path);
+
+        for(var key in params) {
+            if(params.hasOwnProperty(key)) {
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", key);
+                hiddenField.setAttribute("value", params[key]);
+
+                form.appendChild(hiddenField);
+             }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
     </script>
     <style>
 
@@ -28,6 +53,11 @@
 {
     height: 100%;
     width: 100%;
+}
+
+.profile_pic {
+    width:540px; /* you can use % */
+    height: auto;
 }
 
 
@@ -60,7 +90,7 @@
 
 
 <div style="height:75%;width:33.333%;background:lime" name="middle_left">
-    <iframe name="left_person" ></iframe>
+    <iframe name="left_person"  width="100%" height="100%"></iframe>
 </div>
 
 <div style="height:75%;width:33.333%;background:pink" name="middle_center">
@@ -68,14 +98,13 @@
 
 
         <form action="bottom" target="bottom" method="post" name="selection">
-            <button name="location" value="left" formaction="person" formtarget="left_person">See</button>
-            <select name="screen_name_1" onchange="validateSelection()">
+            <select name="screen_name_1" onchange="validateSelection(); post('person', 'left_person', {location: 'left', screen_name_1: this.value})">
                 {% for screen_name,full_name,party in users_tuples %}
                 <option value="{{screen_name}}" class="{{party}}">{{full_name}}</option>
                 {% endfor %}
             </select>
             <button type="submit" name="submit">Compare</button>
-                        <select name="screen_name_2" onchange="validateSelection()">
+                        <select name="screen_name_2" onchange="validateSelection(); post('person', 'right_person', {location: 'right', screen_name_2: this.value})">
                 {% for screen_name,full_name,party in users_tuples %}
                 <option value="{{screen_name}}" class="{{party}}">{{full_name}}</option>
                 {% endfor %}
@@ -91,8 +120,8 @@
 
 </div>
 
-<div style="height:75%;width:33.333%;background:black;" name="middle_right">
-    <iframe name="right_person" ></iframe>
+<div style="height:75%;width:33.333%;background:red;" name="middle_right">
+    <iframe name="right_person" width="100%" height="100%"></iframe>
 </div>
 
 

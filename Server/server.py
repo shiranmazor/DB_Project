@@ -37,6 +37,9 @@ def person():
     if str(request.form['location']) == "left":
         screen_name = str(request.form['screen_name_1'])
         return get_user_data(screen_name)
+    elif str(request.form['location']) == "right":
+        screen_name = str(request.form['screen_name_2'])
+        return get_user_data(screen_name)
 
 
 

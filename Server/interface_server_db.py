@@ -178,7 +178,13 @@ def get_user_data(screen_name):
     '''
     try:
         user_data = ud.get_user_data(screen_name=screen_name)
-        html = "<br /> <img src={}>".format(user_data["profile_picture_url"])
+        #html = "<br /> <img src={}>".format(user_data["profile_picture_url"])
+        html =        "<!DOCTYPE html>\
+        <html lang='en'><body><center>"
+
+        html += "<br /> <img src='https://twitter.com/{}/profile_image?size=original' style='width:200px;height:auto'>".format(screen_name)
+
+
         html += "<br />{} ".format(user_data["full_name"])
         html += "<br />Is a {} ".format(user_data["role_name"])
         html += "<br />From {} ".format(user_data["location"])
@@ -188,17 +194,28 @@ def get_user_data(screen_name):
         html += "<br /> <br />Last tweet: {} "\
             .format(str(last_tweet))
 
-        return html, 0
+        return html + "</center></body></html>", 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def format_tweet(last_tweets):
-    results = 'No tweets in system'
-    if len(last_tweets) > 0:
-        pass
-    return results
+def add_href_to_raw_text(string, target="_blank"):
+    string = string.encode('utf-8')
+    string_array = string.split(" ")
+    for i in range(len(string_array)):
+        if string_array[i].startswith("http"):
+            string_array[i] = "<a href='{0}' target='{1}'>{2}</a>".format(string_array[i], target, string_array[i])
+        elif string_array[i].startswith("#"):
+            string_array[i] = "<a href='https://twitter.com/hashtag/{0}' target='{1}'>{2}</a>".format(string_array[i][1:], target, string_array[i])
+    return " ".join(string_array)
 
+def format_tweet(last_tweets):
+    if len(last_tweets) == 0:
+        return ""
+
+    else:
+        tweet = last_tweets[0]
+        return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) + str(tweet["tweet"]["date"]) + "</a>" + "<br /><i>" + add_href_to_raw_text(tweet["tweet"]["text"]) + "</i>"
 
 def get_popular_searched(count = 5):
     '''
