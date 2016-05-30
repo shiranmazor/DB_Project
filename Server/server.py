@@ -5,7 +5,7 @@ from interface_server_db import *
 import traceback
 
 
-application = Flask(__name__, static_url_path = "/templates/static", static_folder = "/static")
+application = Flask(__name__, static_url_path = "")
 
 @application.route("/")
 def hello():

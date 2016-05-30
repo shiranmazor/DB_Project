@@ -261,12 +261,14 @@ def get_user_data(screen_name):
         html =        "<!DOCTYPE html>\
         <html lang='en'><body><center>"
 
-        html += "<br /> <img src='https://twitter.com/{}/profile_image?size=original' style='width:200px;height:auto'>".format(screen_name)
+        html += "<br /><a href='https://twitter.com/{}' target='_blank'><img src='https://twitter.com/{}/profile_image?size=original' style='border-radius: 50%;width:100px;height:auto' /></a>".format(screen_name, screen_name)
 
 
         html += "<br />{} ".format(user_data["full_name"])
-        html += "<br />Is a {} ".format(user_data["role_name"])
-        html += "<br />From {} ".format(user_data["location"])
+        if user_data["role_name"]:
+            html += "<br />Is a {} ".format(user_data["role_name"])
+        if user_data["location"]:
+            html += "<br />From {} ".format(user_data["location"])
         last_tweets = ud.get_last_tweets(count=1, screen_name=screen_name)
         #last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
         last_tweet = format_tweet(last_tweets)
@@ -278,6 +280,18 @@ def get_user_data(screen_name):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
+def remove_useless_chars(string):
+    left = 0
+    right = len(string) - 1
+    while(string[left] != "_" and not(string[left].isalnum())):
+        left += 1
+    while(string[right] != "_" and not(string[right].isalnum())):
+        right -= 1
+    if left < right:
+        return string[left:right + 1]
+    else:
+        return ""
+
 def add_href_to_raw_text(string, target="_blank"):
     string = string.encode('utf-8')
     string_array = string.split(" ")
@@ -285,7 +299,9 @@ def add_href_to_raw_text(string, target="_blank"):
         if string_array[i].startswith("http"):
             string_array[i] = "<a href='{0}' target='{1}'>{2}</a>".format(string_array[i], target, string_array[i])
         elif string_array[i].startswith("#"):
-            string_array[i] = "<a href='https://twitter.com/hashtag/{0}' target='{1}'>{2}</a>".format(string_array[i][1:], target, string_array[i])
+            string_array[i] = "<a href='https://twitter.com/hashtag/{0}' target='{1}'>{2}</a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
+        elif string_array[i].startswith("@"):
+            string_array[i] = "<a href='https://twitter.com/{0}' target='{1}'>{2}</a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
     return " ".join(string_array)
 
 def format_tweet(last_tweets):
@@ -297,7 +313,7 @@ def format_tweet(last_tweets):
         #tweet_text = tweet["tweet"]['text'].encode('utf-8')
         return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) +\
                str(tweet["tweet"]["date"]) +\
-               "</a>""<br /><div style='background-color:#ffffff'><i>" +\
+               "</a>""<br /><div style='background-color:#ffffff;font-size:14px;font-family: Times New Roman;border-radius:5px'><i>" +\
                add_href_to_raw_text(tweet["tweet"]['text']) + "</i></span>"
 
 def get_popular_searched(count = 5):
