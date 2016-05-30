@@ -215,7 +215,10 @@ def format_tweet(last_tweets):
 
     else:
         tweet = last_tweets[0]
-        return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) + str(tweet["tweet"]["date"]) + "</a>" + "<br /><i>" + add_href_to_raw_text(tweet["tweet"]["text"]) + "</i>"
+        return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) +\
+               str(tweet["tweet"]["date"]) +\
+               "</a>""<br /><div style='background-color:#ffffff'><i>" +\
+               add_href_to_raw_text(tweet["tweet"]["text"]) + "</i></span>"
 
 def get_popular_searched(count = 5):
     '''
