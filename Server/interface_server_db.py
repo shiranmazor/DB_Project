@@ -157,19 +157,9 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets = shared
         user1_mention2_tweets = user1_mention2_tweets[:number]
         user2_mention1_tweets = user2_mention1_tweets[:number]
-
-        user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
-        user2_mention1_tweets = sorted(user2_mention1_tweets, lambda x: x['date'])
         user1_mention2_tweets.extend(user2_mention1_tweets)
         user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
-        '''
-                #merge tweets by date
-        for user1_t, user2_t in zip(user1_mention2_tweets,user2_mention1_tweets):
-            if user1_t['date'] < user2_t['date']:
-                sorted_lst.append(user1_t)
-            else:
-                sorted_lst.append(user2_t)
-        '''
+
 
 
         for tweet_item in user1_mention2_tweets:
@@ -209,42 +199,6 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def get_tweets_user_mentions(screen_name_1, screen_name_2, number=10):
-    '''
-    this function generates an html text that gives the number (default=10)
-    of mentions in tweets of the two given screen names.
-    :param screen_name_1:
-    :param screen_name_2:
-    :param num:
-    :return:html text as described up, error code
-    '''
-    try:
-        users_data = ud.get_user_list()
-        shared = fd.get_shared_tweets(screen_name_1, screen_name_2)
-
-        user1_mentions = shared[1]
-        user1_mentions = user1_mentions[0:number]
-        mention1 = ""
-        count = 1
-        for mention in user1_mentions:
-            mention1 += "<br /> " + str(count) + ". " + str(mention)
-            count += 1
-
-        user2_mentions = shared[2]
-        user2_mentions = user2_mentions[0:number]
-
-        mention2 = ""
-        count = 1
-        for mention in user2_mentions:
-            mention2 += "<br /> " + str(count) + ". " + str(mention)
-            count += 1
-
-        return "<br /> {0} was mentioned in: {1}. {2} was mentioned in: {3}".format(
-            users_data[screen_name_2]["full_name"],
-            mention1, users_data[screen_name_1]["full_name"], mention2), 0
-    except:
-        print traceback.format_exc()
-        return traceback.format_exc(), 1
 
 def get_user_data(screen_name):
     '''
