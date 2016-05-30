@@ -60,6 +60,7 @@ def get_popular_users(count = 5):
             d={}
             d['screen_name'] = data['screen_name']
             d['count'] = count
+            d['last_date'] = search['last_date']
             output.append(d)
 
         return output
