@@ -3,6 +3,7 @@ import ServerLogic.friendship_data as fd
 import ServerLogic.searches_logic as sd
 import ServerLogic.update_data_from_twiter as upd
 from time import gmtime, strftime
+import datetime
 import traceback
 from ServerLogic.common import *
 
@@ -292,7 +293,7 @@ def update_search(screen_name):
     :return:error message in case of error, error code
     '''
     try:
-        sd.update_user_search(screen_name, get_date())
+        sd.update_user_search(screen_name,datetime.datetime.now())
         return "", 0
     except:
         print traceback.format_exc()

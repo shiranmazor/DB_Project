@@ -1,6 +1,12 @@
-from flask import Flask, render_template, request, url_for, send_from_directory
+
 import sys
 sys.path.append("../")
+import sys
+import os
+sys.path.append('../packages/flask_egg')
+sys.path.append('../packages/flask')
+
+from flask import Flask, render_template, request, url_for, send_from_directory
 from interface_server_db import *
 import traceback
 
