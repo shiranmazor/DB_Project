@@ -46,67 +46,67 @@ def get_friendship(screen_name_1, screen_name_2):
     '''
     try:
         if screen_name_1 == screen_name_2:
-            html = "<br />You chose to compare the same person! Please choose different persons"
+            return "<br />You chose to compare the same person! Please choose different persons", 0
         else:
             users_data = ud.get_user_list()
             shared_info = fd.get_shared_info(screen_name_1, screen_name_2)
-            html = ""
-
-            html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["full_name"],
-                                                                users_data[screen_name_2]["full_name"])
-            html_pattern_followers = "<br />{0} and {1} ".format(users_data[screen_name_1]["full_name"],
+            html_prev = "<br />Shared information between {0} and {1}:".format(users_data[screen_name_1]["full_name"],
                                                                  users_data[screen_name_2]["full_name"])
+            html_party = ""
+            html_role = ""
+            html_followers = ""
+            html_followees = ""
+            html_location = ""
             for key in shared_info.keys():
                 if key == "party_name":
-                    html += (
-                    html_pattern + str_replace(users_data[screen_name_1]["party_name"], "Republican", "Republicans",
-                                         "Democratic", "Democrats"))
+                    html_party = "<br />They both a {0} representatives.".format(shared_info["party_name"])
+
                 if key == "role_name":
-                    html += (html_pattern + shared_info["role_name"] + "s")
+                    html_role = "<br />They are {0}s.".format(shared_info["role_name"])
 
                 if key == "location":
-                    html += (html_pattern + "from " + shared_info["location"])
+                    html_location = "<br />They live in {0}.".format(shared_info["location"])
 
                 if key == "followers":
                     followers = shared_info["followers"]
                     followers = followers[0:100]
 
                     count = len(followers)
+                    num = 1
                     f = ""
 
                     for follow in followers:
                         try:
-                            f += str(follow) + ", "
+                            f +="<br />{0}. ".format(str(num)) + str(follow)
+                            num += 1
                         except:
                             pass
-                    f = f[:-2]
-                    if f != "":
-                        f += "."
-                        if count > 1:
-                            html += (html_pattern_followers + "have the common followers: " + f)
-
-                        else:
-                            html += (html_pattern_followers + "have one common follower: " + f)
-
+                    if count > 1:
+                        html_followers = "<br />Shared followers:" + f
+                    elif count == 1:
+                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
                     f = ""
-
+                    count = len(followees)
+                    num = 1
                     for follow in followees:
                         try:
-                            f += str(follow) + ", "
+                            f += "<br />{0}. ".format(str(num)) + str(follow)
+                            num += 1
                         except:
                             pass
-                    f = f[:-2]
-
-                    if f != "":
-                        f += "."
-                        html += (html_pattern_followers + "and follow: " + f)
-            #data = get_related_tweets(screen_name_1=screen_name_1, screen_name_2=screen_name_2)
-            #data.encode('unicode')
-            #html+=data
-        return html, 0
+                    if count > 1:
+                        html_followers = "<br />Shared followers:" + f
+                    elif count == 1:
+                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
+        if html_role == "" and html_location == "" and html_party == ""\
+            and html_followers == "" and html_followees == "":
+            return "<br /> There is no shared information between {0} and {1}!"\
+                       .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
+        else:
+            return html_prev + html_location + html_party + html_role + html_followers + html_followees, 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
