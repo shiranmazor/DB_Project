@@ -42,7 +42,7 @@ def update_existing_user(user_id, search_date, search_record):
     condition_str= 'user_id = {0}'.format(user_id)
     db_global_object.update_table(table_name='searches', fields = fields, values = values, condition_str =condition_str)
 
-def get_popular_users(count = 10):
+def get_popular_users(count = 5):
     '''
     return last 'count' searches
     :param count:
@@ -54,9 +54,13 @@ def get_popular_users(count = 10):
         #for each user get user_data
         for search in popular_searches:
             user_id = search['user_id']
+            count = search['count']
             #get user_id data
             data = user_data.get_user_data(user_id=user_id)
-            output.append(data)
+            d={}
+            d['screen_name'] = data['screen_name']
+            d['count'] = count
+            output.append(d)
 
         return output
     except:

@@ -279,7 +279,6 @@ def get_popular_searched(count = 5):
     '''
     try:
         searched_list = str(get_popular_users(count).strip('[]'))
-        date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
         return "<br /> The most popular congress members searched, till {0} are: {1}".format(get_date(), searched_list), 0
     except:
