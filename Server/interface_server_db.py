@@ -275,7 +275,7 @@ def format_tweet(last_tweets):
                "</a>""<br /><div style='background-color:#ffffff;font-size:14px;font-family: Times New Roman;border-radius:5px'><i>" +\
                add_href_to_raw_text(tweet["tweet"]['text']) + "</i></span>"
 
-def get_popular_searched(count = 5):
+def get_popular_searches(count = 5):
     '''
     this function generates an html text that shows the most popular searches in our application (default=5),
     and date of update.
@@ -283,7 +283,7 @@ def get_popular_searched(count = 5):
     :return:html text as described up, error code
     '''
     try:
-        searched_list = str(get_popular_users(count).strip('[]'))
+        searched_list = str(sd.get_popular_users(count).strip('[]'))
 
         return "<br /> The most popular congress members searched, till {0} are: {1}".format(get_date(), searched_list), 0
     except:

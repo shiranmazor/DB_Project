@@ -1,5 +1,4 @@
 import sys
-sys.path.append('../packages/mysql')
 import mysql.connector as mdb
 import consts
 import traceback

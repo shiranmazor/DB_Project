@@ -1,5 +1,4 @@
 import sys
-sys.path.append('../packages/twitter.egg')
 from twitter import *
 import datetime
 import re
