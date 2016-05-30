@@ -103,6 +103,9 @@ def get_friendship(screen_name_1, screen_name_2):
                     if f != "":
                         f += "."
                         html += (html_pattern_followers + "and follow: " + f)
+            #data = get_related_tweets(screen_name_1=screen_name_1, screen_name_2=screen_name_2)
+            #data.encode('unicode')
+            #html+=data
         return html, 0
     except:
         print traceback.format_exc()
@@ -159,16 +162,23 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
 
         user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
         user2_mention1_tweets = sorted(user2_mention1_tweets, lambda x: x['date'])
-        #merge tweets by date
+        user1_mention2_tweets.extend(user2_mention1_tweets)
+        user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
+        '''
+                #merge tweets by date
         for user1_t, user2_t in zip(user1_mention2_tweets,user2_mention1_tweets):
             if user1_t['date'] < user2_t['date']:
                 sorted_lst.append(user1_t)
             else:
                 sorted_lst.append(user2_t)
+        '''
 
-        for tweet_item in sorted_lst:
-            data+="<br /> " + str(tweet_item['screen_name']) + ", " + str(tweet_item['date'])+ ": "+ str(tweet_item['text'])
 
+        for tweet_item in user1_mention2_tweets:
+            tweet_text = tweet_item['text'].encode('utf-8')
+            data+="<br /> {0}, {1} : {2}".format(tweet_item['screen_name'],tweet_item['date'],tweet_text)
+
+        return data
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -284,10 +294,11 @@ def format_tweet(last_tweets):
 
     else:
         tweet = last_tweets[0]
+        #tweet_text = tweet["tweet"]['text'].encode('utf-8')
         return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) +\
                str(tweet["tweet"]["date"]) +\
                "</a>""<br /><div style='background-color:#ffffff'><i>" +\
-               add_href_to_raw_text(tweet["tweet"]["text"]) + "</i></span>"
+               add_href_to_raw_text(tweet["tweet"]['text']) + "</i></span>"
 
 def get_popular_searched(count = 5):
     '''
