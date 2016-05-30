@@ -56,9 +56,9 @@ def get_popular_users(count = 5):
             user_id = search['user_id']
             count = search['count']
             #get user_id data
-            data = user_data.get_user_data(user_id=user_id)
+            data = db_global_object.get_values_by_field(table_name='Users', field_name='id', field_value=user_id)[0]
             d={}
-            d['screen_name'] = data['screen_name']
+            d['screen_name'] = str(data['screen_name'])
             d['count'] = count
             d['last_date'] = search['last_date']
             output.append(d)

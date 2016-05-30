@@ -1,6 +1,7 @@
 import sys
 import os
 sys.path.append("../")
+sys.path.insert(1, os.path.join(os.path.abspath('.'), 'lib'))
 from flask import Flask, render_template, request, url_for, send_from_directory
 from interface_server_db import *
 import traceback
