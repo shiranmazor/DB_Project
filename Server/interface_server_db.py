@@ -125,7 +125,7 @@ def update_all_users():
 
 
 
-def update_user(screen_name, from_date):
+def update_user(screen_name):
     '''
     update user info + tweets in db
     :param screen_name:
@@ -134,6 +134,7 @@ def update_user(screen_name, from_date):
     '''
     #update user info
     upd.update_user_data(screen_name = screen_name)
+    from_date = ud.db_logic.get_last_tweet_date(screen_name=screen_name)
     #update user tweetes
     user_id = ud.db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
     #
