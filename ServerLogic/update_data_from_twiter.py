@@ -14,8 +14,7 @@ from ServerLogic.common import *
 import traceback
 import argparse
 
-db_obj = DbWrapper()
-db_logic = DBLogic(db_wrapper_obj=db_obj)
+
 twiter_obj = Twitter_Api()
 
 def add_uew_users():
@@ -187,7 +186,7 @@ def get_user_last_tweet_date(user_id, user_id_last_dates):
     return None
 
 
-def update_user_tweet( user_db_id, screen_name,from_date, db_logic):
+def update_user_tweet( user_db_id, screen_name,from_date):
     '''
     find the tweet_id closet to the from date and get tweets with since_id
     :param user_db_id:
@@ -218,13 +217,13 @@ def update_user_tweet( user_db_id, screen_name,from_date, db_logic):
                 urls += tweet_url + '; '
 
             tweet_values = [tweet["text"], tweet["time"], urls, user_db_id, tweet["tweet_id"]]
-            db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
+            db_global_object.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
             db_tweet_id = db_logic.get_last_id_from_table('tweets')[0]['last_id']
             # tweet files table:
             tweet_files = tweet['tweet_files']
             for tweet_file in tweet_files:
                 tweet_files_values = [tweet_file['file_type'], tweet_file['file_url'], db_tweet_id]
-                db_obj.insert_to_table(table_name='tweet_files', fields=tweet_files_fields, values=tweet_files_values)
+                db_global_object.insert_to_table(table_name='tweet_files', fields=tweet_files_fields, values=tweet_files_values)
                 # finish deal with tweet files
 
             ############mentions table:
@@ -238,13 +237,40 @@ def update_user_tweet( user_db_id, screen_name,from_date, db_logic):
 
             for user_id in ids:
                 mention_values = [user_id, db_tweet_id]
-                db_obj.insert_to_table(table_name='mentions', fields=mentions_fields, values=mention_values)
+                db_global_object.insert_to_table(table_name='mentions', fields=mentions_fields, values=mention_values)
 
         except:
             print 'Error in loading tweets for user {0}'.format(screen_name)
             print traceback.format_exc()
 
+def update_user_data(screen_name = None):
+    '''
+    get user data from twitter api and update the db
+    :param full_name:
+    :param screen_name:
+    :return:
+    '''
+    twiter_obj = Twitter_Api()
+    user_output = twiter_obj.get_user_data(screen_name=screen_name)
+    print 'updating user info :{0}'.format(screen_name)
+    if len(user_output) > 0:
+        fields = ['full_name', 'screen_name', 'description', 'location', 'followers_count', 'friends_count',
+                  'twitter_id', 'profile_picture_url', 'role_id', 'party_id']
 
+        # getting rol_id and party_id value
+        party_id, role_id = get_party_role_id(db_global_object, screen_name)
+        user_full_name = users_data[screen_name]['real_name']
+        values = [user_full_name, user_output['screen_name'], user_output['description'],
+                  user_output['location'], user_output['followers_count'], user_output['friends_count'],
+                  user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
+
+        user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+        condition_str = 'id = {0}'.format(user_id)
+        db_global_object.update_table(table_name='Users', fields=fields, values=values, condition_str=condition_str)
+        print 'insert user {0}'.format(screen_name)
+    else:
+        print 'problem getting user data on {0}'.format(screen_name)
+        print traceback.format_exc()
 
 if __name__ == '__main__':
 

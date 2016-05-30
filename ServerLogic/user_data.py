@@ -1,6 +1,7 @@
 import sys
 sys.path.append("../")
 from common import *
+from TwitterApi.twitter_api import *
 
 
 
@@ -147,8 +148,7 @@ def get_tweet_mentions(tweet_id):
                                                      field_value=tweet_id)
     return mentions
 
-def update_user_data(full_name):
-    pass
+
 
 
 if __name__ == '__main__':

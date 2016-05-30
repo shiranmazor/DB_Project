@@ -101,6 +101,11 @@ def get_id_by_full_name(full_name,users_id_screen_name_fullname):
         if item['full_name'] == full_name:
             return item['id']
 
+def get_id_by_screenname(screen_name, users_id_screen_name):
+    for item in users_id_screen_name:
+        if item['screen_name'] == screen_name:
+            return item['id']
+
 def get_party_role_id(db_obj,screen_name):
     '''
     recive screen_name and returns the party_id,role_id

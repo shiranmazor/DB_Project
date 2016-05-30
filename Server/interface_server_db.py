@@ -1,6 +1,7 @@
 import ServerLogic.user_data as ud
 import ServerLogic.friendship_data as fd
 import ServerLogic.searches_logic as sd
+import ServerLogic.update_data_from_twiter as upd
 from time import gmtime, strftime
 import traceback
 from ServerLogic.common import *
@@ -106,6 +107,24 @@ def get_friendship(screen_name_1, screen_name_2):
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
+
+
+def update_user(screen_name, from_date):
+    '''
+    update user info + tweets in db
+    :param screen_name:
+    :param from_date: date of the last tweet
+    :return:
+    '''
+    #update user info
+    upd.update_user_data(screen_name = screen_name)
+    #update user tweetes
+    user_id = ud.db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+    #
+    upd.update_user_tweet(user_db_id = user_id, screen_name = screen_name, from_date = from_date)
+    #call get_user_data
+    return get_user_data(screen_name=screen_name)
+
 
 def get_related_tweets(screen_name_1, screen_name_2,number = 20):
     '''

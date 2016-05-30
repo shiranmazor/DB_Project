@@ -137,7 +137,7 @@ class DbWrapper():
             for field, value in zip(fields, values):
                 query+= 'set {0}=%s, '.format(field)
 
-            query=query[:-1]
+            query=query[:-2]
             if condition_str:
                 query+= ' where '+condition_str
 

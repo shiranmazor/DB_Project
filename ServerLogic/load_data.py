@@ -21,6 +21,16 @@ def insert_new_data():
     twiter_obj = Twitter_Api()
     return db_obj,twiter_obj
 
+def update_users_name_by_screen():
+
+    for screen_name in users_data:
+        user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
+        user_full_name = users_data[screen_name]['real_name']
+        fields = ['full_name']
+        values = [user_full_name]
+        condition_str = 'id = {0}'.format(user_id)
+        if user_id:
+            db_global_object.update_table(table_name='users',fields=fields,values=values,condition_str=condition_str)
 
 def load_users_table(db_obj, twiter_obj):
     '''
@@ -47,8 +57,8 @@ def load_users_table(db_obj, twiter_obj):
 
                 #getting rol_id and party_id value
                 party_id, role_id = get_party_role_id(db_obj, screen_name)
-                user_full_name = users_data['full_name']
-                values = [user_output['full_name'], user_output['screen_name'], user_output['description'],
+                user_full_name = users_data[screen_name]['real_name']
+                values = [user_full_name, user_output['screen_name'], user_output['description'],
                           user_output['location'], user_output['followers_count'], user_output['friends_count'],
                           user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
 
@@ -316,10 +326,6 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
-    db_obj = DbWrapper()
-    db_logic = DBLogic(db_wrapper_obj=db_obj)
-    twiter_obj = Twitter_Api()
+    main()
 
-    load_tweets_all_users(db_obj , twiter_obj, db_logic)
 
