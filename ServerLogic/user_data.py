@@ -93,7 +93,7 @@ def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None
     :param user_id:
     :param count:
     :param from_date:
-    :return:list of tweets contain: key1= tweet value=weet record, key2 = tweet_files, key3 = mentions
+    :return:list of tweets contain: key1= tweet value=tweet record, key2 = tweet_files, key3 = mentions
     '''
     output_lst = []
     if not user_id and not full_name and not screen_name:

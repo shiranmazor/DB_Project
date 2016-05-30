@@ -182,7 +182,9 @@ def get_user_data(screen_name):
         html += "<br />{} ".format(user_data["full_name"])
         html += "<br />Is a {} ".format(user_data["role_name"])
         html += "<br />From {} ".format(user_data["location"])
-        last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
+        last_tweets = ud.get_last_tweets(count=1, screen_name=screen_name)
+        #last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
+        last_tweet = format_tweet(last_tweets)
         html += "<br /> <br />Last tweet: {} "\
             .format(str(last_tweet))
 
@@ -190,6 +192,12 @@ def get_user_data(screen_name):
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
+
+def format_tweet(last_tweets):
+    results = 'No tweets in system'
+    if len(last_tweets) > 0:
+        pass
+    return results
 
 
 def get_popular_searched(count = 5):
