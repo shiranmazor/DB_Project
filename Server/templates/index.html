@@ -13,7 +13,6 @@
     // assumption: dropdown names are "screen_name_1", "screen_name_2"
 
         function validateSelection() {
-            //document.write(document.forms.selection.screen_name_1);
             if (document.forms.selection.screen_name_1.value == document.forms.selection.screen_name_2.value) {
                 alert('Warning: chose same person twice');
                 document.forms.selection.submit.disabled = true;
@@ -61,7 +60,7 @@
 
 
 <div style="height:75%;width:33.333%;background:lime" name="middle_left">
-    left person
+    <iframe name="left_person" ></iframe>
 </div>
 
 <div style="height:75%;width:33.333%;background:pink" name="middle_center">
@@ -69,6 +68,7 @@
 
 
         <form action="bottom" target="bottom" method="post" name="selection">
+            <button name="location" value="left" formaction="person" formtarget="left_person">See</button>
             <select name="screen_name_1" onchange="validateSelection()">
                 {% for screen_name,full_name,party in users_tuples %}
                 <option value="{{screen_name}}" class="{{party}}">{{full_name}}</option>
@@ -91,8 +91,8 @@
 
 </div>
 
-<div style="height:75%;width:33.333%;background:black;" name="middle_righr">
-    right person
+<div style="height:75%;width:33.333%;background:black;" name="middle_right">
+    <iframe name="right_person" ></iframe>
 </div>
 
 
