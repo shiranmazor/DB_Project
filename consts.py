@@ -1,6 +1,6 @@
 DB_HOSTNAME = '127.0.0.1'
-DB_USER = 'sakila'
-DB_PASSWORD = 'sakila'
+DB_USER = 'root'
+DB_PASSWORD = '1234'
 DB_NAME = 'hoc_db'
 
 #query format :INSERT INTO TABLE_NAME (f1,f2..) VALUES (%s, %s, %s, %s, %s)

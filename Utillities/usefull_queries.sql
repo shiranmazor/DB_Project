@@ -9,3 +9,4 @@ CREATE INDEX screen_name_index ON  users(screen_name) USING BTREE;
 CREATE INDEX full_name_index ON  users(full_name) USING BTREE;
 
 
+ALTER DATABASE hoc_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

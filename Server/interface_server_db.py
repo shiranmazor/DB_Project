@@ -46,67 +46,67 @@ def get_friendship(screen_name_1, screen_name_2):
     '''
     try:
         if screen_name_1 == screen_name_2:
-            html = "<br />You chose to compare the same person! Please choose different persons"
+            return "<br />You chose to compare the same person! Please choose different persons", 0
         else:
             users_data = ud.get_user_list()
             shared_info = fd.get_shared_info(screen_name_1, screen_name_2)
-            html = ""
-
-            html_pattern = "<br />{0} and {1} are both ".format(users_data[screen_name_1]["full_name"],
-                                                                users_data[screen_name_2]["full_name"])
-            html_pattern_followers = "<br />{0} and {1} ".format(users_data[screen_name_1]["full_name"],
+            html_prev = "<br />Shared information between {0} and {1}:".format(users_data[screen_name_1]["full_name"],
                                                                  users_data[screen_name_2]["full_name"])
+            html_party = ""
+            html_role = ""
+            html_followers = ""
+            html_followees = ""
+            html_location = ""
             for key in shared_info.keys():
                 if key == "party_name":
-                    html += (
-                    html_pattern + str_replace(users_data[screen_name_1]["party_name"], "Republican", "Republicans",
-                                         "Democratic", "Democrats"))
+                    html_party = "<br />They both a {0} representatives.".format(shared_info["party_name"])
+
                 if key == "role_name":
-                    html += (html_pattern + shared_info["role_name"] + "s")
+                    html_role = "<br />They are {0}s.".format(shared_info["role_name"])
 
                 if key == "location":
-                    html += (html_pattern + "from " + shared_info["location"])
+                    html_location = "<br />They live in {0}.".format(shared_info["location"])
 
                 if key == "followers":
                     followers = shared_info["followers"]
                     followers = followers[0:100]
 
                     count = len(followers)
+                    num = 1
                     f = ""
 
                     for follow in followers:
                         try:
-                            f += str(follow) + ", "
+                            f +="<br />{0}. ".format(str(num)) + str(follow)
+                            num += 1
                         except:
                             pass
-                    f = f[:-2]
-                    if f != "":
-                        f += "."
-                        if count > 1:
-                            html += (html_pattern_followers + "have the common followers: " + f)
-
-                        else:
-                            html += (html_pattern_followers + "have one common follower: " + f)
-
+                    if count > 1:
+                        html_followers = "<br />Shared followers:" + f
+                    elif count == 1:
+                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
                     f = ""
-
+                    count = len(followees)
+                    num = 1
                     for follow in followees:
                         try:
-                            f += str(follow) + ", "
+                            f += "<br />{0}. ".format(str(num)) + str(follow)
+                            num += 1
                         except:
                             pass
-                    f = f[:-2]
-
-                    if f != "":
-                        f += "."
-                        html += (html_pattern_followers + "and follow: " + f)
-            #data = get_related_tweets(screen_name_1=screen_name_1, screen_name_2=screen_name_2)
-            #data.encode('unicode')
-            #html+=data
-        return html, 0
+                    if count > 1:
+                        html_followers = "<br />Shared followers:" + f
+                    elif count == 1:
+                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
+        if html_role == "" and html_location == "" and html_party == ""\
+            and html_followers == "" and html_followees == "":
+            return "<br /> There is no shared information between {0} and {1}!"\
+                       .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
+        else:
+            return html_prev + html_location + html_party + html_role + html_followers + html_followees, 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -125,7 +125,7 @@ def update_all_users():
 
 
 
-def update_user(screen_name, from_date):
+def update_user(screen_name):
     '''
     update user info + tweets in db
     :param screen_name:
@@ -134,12 +134,11 @@ def update_user(screen_name, from_date):
     '''
     #update user info
     upd.update_user_data(screen_name = screen_name)
+    from_date = ud.db_logic.get_last_tweet_date(screen_name=screen_name)
     #update user tweetes
     user_id = ud.db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
     #
     upd.update_user_tweet(user_db_id = user_id, screen_name = screen_name, from_date = from_date)
-    #call get_user_data
-    return get_user_data(screen_name=screen_name)
 
 
 def get_related_tweets(screen_name_1, screen_name_2,number = 20):
@@ -159,19 +158,9 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets = shared
         user1_mention2_tweets = user1_mention2_tweets[:number]
         user2_mention1_tweets = user2_mention1_tweets[:number]
-
-        user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
-        user2_mention1_tweets = sorted(user2_mention1_tweets, lambda x: x['date'])
         user1_mention2_tweets.extend(user2_mention1_tweets)
         user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
-        '''
-                #merge tweets by date
-        for user1_t, user2_t in zip(user1_mention2_tweets,user2_mention1_tweets):
-            if user1_t['date'] < user2_t['date']:
-                sorted_lst.append(user1_t)
-            else:
-                sorted_lst.append(user2_t)
-        '''
+
 
 
         for tweet_item in user1_mention2_tweets:
@@ -211,42 +200,6 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def get_tweets_user_mentions(screen_name_1, screen_name_2, number=10):
-    '''
-    this function generates an html text that gives the number (default=10)
-    of mentions in tweets of the two given screen names.
-    :param screen_name_1:
-    :param screen_name_2:
-    :param num:
-    :return:html text as described up, error code
-    '''
-    try:
-        users_data = ud.get_user_list()
-        shared = fd.get_shared_tweets(screen_name_1, screen_name_2)
-
-        user1_mentions = shared[1]
-        user1_mentions = user1_mentions[0:number]
-        mention1 = ""
-        count = 1
-        for mention in user1_mentions:
-            mention1 += "<br /> " + str(count) + ". " + str(mention)
-            count += 1
-
-        user2_mentions = shared[2]
-        user2_mentions = user2_mentions[0:number]
-
-        mention2 = ""
-        count = 1
-        for mention in user2_mentions:
-            mention2 += "<br /> " + str(count) + ". " + str(mention)
-            count += 1
-
-        return "<br /> {0} was mentioned in: {1}. {2} was mentioned in: {3}".format(
-            users_data[screen_name_2]["full_name"],
-            mention1, users_data[screen_name_1]["full_name"], mention2), 0
-    except:
-        print traceback.format_exc()
-        return traceback.format_exc(), 1
 
 def get_user_data(screen_name):
     '''
