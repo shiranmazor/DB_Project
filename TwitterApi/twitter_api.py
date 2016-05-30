@@ -1,4 +1,5 @@
 import sys
+sys.path.append("twitter.egg")
 from twitter import *
 import datetime
 import re
