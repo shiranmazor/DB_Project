@@ -96,6 +96,7 @@ def get_shared_tweets(screen_name1, screen_name2):
         for user1_tweet in user1_tweets:
             #get mentions for this tweet
             tweet_id = user1_tweet['id']
+            user1_tweet['screen_name'] = screen_name1
             #tagged_users_id
             tagged_users = db_logic.get_mentions_userid(tweet_id=tweet_id)
             tagged_ids = [x['tagged_users_id'] for x in tagged_users]
@@ -111,6 +112,7 @@ def get_shared_tweets(screen_name1, screen_name2):
         for user2_tweet in user2_tweets:
             # get mentions for this tweet
             tweet_id = user2_tweet['id']
+            user2_tweet['screen_name'] = screen_name2
             # tagged_users_id
             tagged_users = db_logic.get_mentions_userid(tweet_id=tweet_id)
             tagged_ids = [x['tagged_users_id'] for x in tagged_users]
