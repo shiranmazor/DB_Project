@@ -283,7 +283,7 @@ def get_popular_searches(count = 5):
     :return:html text as described up, error code
     '''
     try:
-        searched_list = str(sd.get_popular_users(count).strip('[]'))
+        searched_list = str(sd.get_popular_users(count))
 
         return "<br /> The most popular congress members searched, till {0} are: {1}".format(get_date(), searched_list), 0
     except:
