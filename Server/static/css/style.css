@@ -37,17 +37,17 @@ button {
 }
 
 
-        div, span {
-        float:left;
-        overflow:hidden;
-        }
-        option {
-            color:white;
-            background-color:black;
-        }
-        .Democratic {
-            background-color:navy;
-        }
-        .Republican {
-            background-color:maroon;
-        }
+div, span {
+    float:left;
+    overflow:hidden;
+}
+option {
+    color:white;
+    background-color:black;
+}
+.Democratic {
+    background-color:navy;
+}
+.Republican {
+    background-color:maroon;
+}
