@@ -167,13 +167,8 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         user1_mention2_tweets.extend(user2_mention1_tweets)
         user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
 
-
-
-        for tweet_item in user1_mention2_tweets:
-            #tweet_text = tweet_item['text'].encode('utf-8')
-            data+="<br /> {0}, {1} : {2}".format(tweet_item['screen_name'],tweet_item['date'],tweet_item['text'].encode('utf-8'))
-
-        return data
+        print user1_mention2_tweets
+        return format_tweet(user1_mention2_tweets, showUser=True)
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -230,7 +225,7 @@ def get_user_data(screen_name):
             html += "<br />From {} ".format(user_data["location"])
         last_tweets = ud.get_last_tweets(count=1, screen_name=screen_name)
         #last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
-        last_tweet = format_tweet(last_tweets)
+        last_tweet = format_tweet(last_tweets, 1)
         html += "<br /> <br />Last tweet: {} "\
             .format(str(last_tweet))
 
@@ -257,25 +252,28 @@ def add_href_to_raw_text(string, target="_blank"):
     string = string.encode('utf-8')
     string_array = string.split(" ")
     for i in range(len(string_array)):
-        if string_array[i].startswith("http"):
+        if string_array[i].startswith("https://") or string_array[i].startswith("http://"):
             string_array[i] = "<a href='{0}' target='{1}'>{2}</a>".format(string_array[i], target, string_array[i])
         elif string_array[i].startswith("#"):
-            string_array[i] = "<a href='https://twitter.com/hashtag/{0}' target='{1}'>{2}</a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
+            string_array[i] = "<a href='https://twitter.com/hashtag/{0}' target='{1}'><b>{2}</b></a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
         elif string_array[i].startswith("@"):
-            string_array[i] = "<a href='https://twitter.com/{0}' target='{1}'>{2}</a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
+            string_array[i] = "<a href='https://twitter.com/{0}' target='{1}'><b>{2}</b></a>".format(remove_useless_chars(string_array[i]), target, string_array[i])
     return " ".join(string_array)
 
-def format_tweet(last_tweets):
-    if len(last_tweets) == 0:
-        return ""
-
-    else:
-        tweet = last_tweets[0]
-        #tweet_text = tweet["tweet"]['text'].encode('utf-8')
-        return "<a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet"]["tweet_id"]) +\
-               str(tweet["tweet"]["date"]) +\
+def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
+    text = ""
+    for i in range(min(len(tweets_list), chop)):
+        tweet = tweets_list[i]
+        if type(tweet) == dict and "tweet" in tweet:
+            tweet = tweet["tweet"]
+        print tweet
+        print users_data
+        poster = (" {} ({})".format(users_data[tweet["screen_name"]]["real_name"], tweet["screen_name"]) if showUser else "")
+        text += "<br /><a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet_id"]) +\
+               str(tweet["date"]) + poster +\
                "</a>""<br /><div style='background-color:#ffffff;font-size:14px;font-family: Times New Roman;border-radius:5px'><i>" +\
-               add_href_to_raw_text(tweet["tweet"]['text']) + "</i></span>"
+               add_href_to_raw_text(tweet['text']) + "</i></span>"
+    return text
 
 def get_popular_searches(count = 5):
     '''
@@ -285,9 +283,19 @@ def get_popular_searches(count = 5):
     :return:html text as described up, error code
     '''
     try:
-        searched_list = str(sd.get_popular_users(count))
+        searched_list = sd.get_popular_users(count)
+        text = ""
+        GOLD, SILVER, BRONZE = '#ffe400', '#c3c7ca', '#c56f50'
+        for i in range(len(searched_list)):
+            dic = searched_list[i]
+            #print "MTN " + str(dic)
+            if i in [0,1,2]:
+                text += "<font color='{0}'>{1} ({2})</font> ".format(str_replace(i,"0",GOLD,"1",SILVER,"2",BRONZE), dic["full_name"], dic["count"])
+            else:
+                print dic["full_name"], dic["count"]
+                text += "{0} ({1})".format(dic["full_name"], dic["count"])
 
-        return "<br /> The most popular congress members searched, till {0} are: {1}".format(get_date(), searched_list), 0
+        return "<div title='Last searched on {}' style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:x-large'>Most popular searched<br/ >{}<br/><small>Last updated: {} GMT</small></div>".format(str(dic["last_date"]), text, get_date()), 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1

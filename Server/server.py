@@ -44,6 +44,12 @@ def person():
 
 
 
+@application.route("/top_searches")
+def top_searches():
+    return get_popular_searches(3)[0]
+
+
+
 
 '''
 @application.route("/leftandright", methods = ['GET', 'POST'])
