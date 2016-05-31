@@ -6,8 +6,23 @@ from interface_server_db import *
 import traceback
 
 
-application = Flask(__name__, static_url_path = "")
+application = Flask(__name__)
 
+'''
+# remove old static map
+url_map = application.url_map
+try:
+    for rule in url_map.iter_rules('static'):
+        url_map._rules.remove(rule)
+except ValueError:
+    # no static view was created yet
+    pass
+
+# register new; the same view function is used
+application.add_url_rule(
+    application.static_url_path + '/<path:filename>',
+    endpoint='static', view_func=application.send_static_file)
+'''
 @application.route("/")
 def hello():
     #print str(create_tuples("full_name", "party_name"))
