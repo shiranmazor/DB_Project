@@ -81,27 +81,29 @@ def get_friendship(screen_name_1, screen_name_2):
 
                     for follow in followers:
                         try:
-                            f +="<br />{0}. ".format(str(num)) + str(follow)
+                            f += "<li> "+ str(follow) + "</li>"
                             num += 1
                         except:
                             pass
                     if count > 1:
+                        f += "</ul>"
                         html_followers = "<br />Shared followers:" + f
                     elif count == 1:
                         html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
-                    f = ""
+                    f = '<br/><ul style = "list-style-type:disc" >'
                     count = len(followees)
                     num = 1
                     for follow in followees:
                         try:
-                            f += "<br />{0}. ".format(str(num)) + str(follow)
+                            f += "<li> "+ str(follow) + "</li>"
                             num += 1
                         except:
                             pass
                     if count > 1:
+                        f += "</ul>"
                         html_followers = "<br />Shared followers:" + f
                     elif count == 1:
                         html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
