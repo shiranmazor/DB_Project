@@ -86,7 +86,7 @@ class DBLogic():
 
 
 
-    def get_followers_name(self, user_id):
+    def get_followers_screen_name(self, user_id):
         '''
         contains complicated query
         :param user_id:
@@ -95,7 +95,7 @@ class DBLogic():
         try:
             cursor = self.db_obj.con.cursor()
             query = '''
-            select users.full_name
+            select users.screen_name
             from users
             where id in
             (
@@ -114,7 +114,7 @@ class DBLogic():
             print 'Error in selecting from db'
             print traceback.format_exc()
 
-    def get_followees_name(self, user_id):
+    def get_followees_screen_name(self, user_id):
         '''
         contains complicated query
         :param user_id:
@@ -123,7 +123,7 @@ class DBLogic():
         try:
             cursor = self.db_obj.con.cursor()
             query = '''
-            select users.full_name
+            select users.screen_name
             from users
             where id in
             (

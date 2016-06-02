@@ -31,46 +31,46 @@ def get_user_data(full_name = None, screen_name = None, user_id= None):
         user_output['role_name'] = role_out['rol_name']
 
         #get followers and friends names:
-        user_output['followers_names'] = get_followers_names(user_id=user_output['id'])
-        user_output['followees_names'] = get_followees_names(user_id=user_output['id'])
+        user_output['followers_names'] = get_followers_screen_names(user_id=user_output['id'])
+        user_output['followees_names'] = get_followees_screen_names(user_id=user_output['id'])
         return user_output
     except:
         print 'problem in getting user data'
         print traceback.format_exc()
         return {}
 
-def get_followers_names(user_id = None, full_name = None, screen_name = None):
+def get_followers_screen_names(user_id = None, full_name = None, screen_name = None):
     try:
         followers_out = {}
         if user_id:
-            followers_out = db_logic.get_followers_name(user_id=user_id)
+            followers_out = db_logic.get_followers_screen_name(user_id=user_id)
         elif full_name:
             user_id = db_logic.get_user_id_by_field(field_name='full_name', field_value=full_name)
-            followers_out = db_logic.get_followers_name(user_id=user_id)
+            followers_out = db_logic.get_followers_screen_name(user_id=user_id)
         elif screen_name:
             user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
-            followers_out = db_logic.get_followers_name(user_id=user_id)
+            followers_out = db_logic.get_followers_screen_name(user_id=user_id)
 
-        followers = [x['full_name'] for x in followers_out]
+        followers = [x['screen_name'] for x in followers_out]
         return followers
     except:
         print traceback.format_exc()
         return []
 
-def get_followees_names(user_id = None, full_name = None, screen_name = None):
+def get_followees_screen_names(user_id = None, full_name = None, screen_name = None):
     try:
         followees_out = []
         if user_id:
-            followees_out = db_logic.get_followees_name(user_id=user_id)
+            followees_out = db_logic.get_followees_screen_name(user_id=user_id)
         elif full_name:
             user_id = db_logic.get_user_id_by_field(field_name='full_name',field_value=full_name )
-            followees_out = db_logic.get_followees_name(user_id=user_id)
+            followees_out = db_logic.get_followees_screen_name(user_id=user_id)
         elif screen_name:
             user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
-            followees_out = db_logic.get_followees_name(user_id=user_id)
+            followees_out = db_logic.get_followees_screen_name(user_id=user_id)
 
 
-        followees = [x['full_name'] for x in followees_out]
+        followees = [x['screen_name'] for x in followees_out]
         return followees
     except:
         print traceback.format_exc()
