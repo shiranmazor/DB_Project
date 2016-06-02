@@ -8,24 +8,8 @@ import traceback
 
 application = Flask(__name__)
 
-'''
-# remove old static map
-url_map = application.url_map
-try:
-    for rule in url_map.iter_rules('static'):
-        url_map._rules.remove(rule)
-except ValueError:
-    # no static view was created yet
-    pass
-
-# register new; the same view function is used
-application.add_url_rule(
-    application.static_url_path + '/<path:filename>',
-    endpoint='static', view_func=application.send_static_file)
-'''
 @application.route("/")
 def hello():
-    #print str(create_tuples("full_name", "party_name"))
     tuples = create_tuples("full_name", "party_name")
     data = ""
     if tuples[1] == 0:
@@ -63,15 +47,6 @@ def person():
 def top_searches():
     return get_popular_searches(3)[0]
 
-
-
-
-'''
-@application.route("/leftandright", methods = ['GET', 'POST'])
-def bottom():
-    screen_name = str(request.form['screen_name'])
-    return get_user_data(screen_name)
-'''
 
 @application.route("/test")
 def test():
