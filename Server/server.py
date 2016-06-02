@@ -42,6 +42,12 @@ def person():
         return get_user_data(screen_name)
 
 
+@application.route("/update_all_users")
+def update_all_users():
+    #update_all_users()  # commented out - update takes hours
+    return ""
+
+
 
 @application.route("/top_searches")
 def top_searches():
