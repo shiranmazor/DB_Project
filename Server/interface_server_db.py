@@ -112,6 +112,7 @@ def get_friendship(screen_name_1, screen_name_2):
             return "<br /> There is no shared information between {0} and {1}!"\
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
+            print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
             return html_prev + html_location + html_party + html_role + html_followers + html_followees + html_tweets, 0
     except:
         print traceback.format_exc()
