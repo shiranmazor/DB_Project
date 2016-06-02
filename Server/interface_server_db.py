@@ -169,7 +169,10 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
 
         print user1_mention2_tweets
-        return format_tweet(user1_mention2_tweets, showUser=True)
+        if len(user1_mention2_tweets) > 0:
+            return format_tweet(user1_mention2_tweets, showUser=True)
+        else:
+            return "<br /> There are no shared tweets."
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
