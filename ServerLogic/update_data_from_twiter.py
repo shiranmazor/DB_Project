@@ -199,6 +199,9 @@ def update_user_tweet( user_db_id, screen_name,from_date):
     output = db_logic.get_latest_tweet_id( user_id = user_db_id, from_date = from_date)[0]
     since_tweet_id = output["tweet_id"]
     user_tweets = twiter_obj.get_timeline_only(screen_name=screen_name, count=500, since_id=since_tweet_id)
+    if len(user_tweets) == 0:
+        print 'no new tweets on user {0}'.format(screen_name)
+        return
 
     # insert to tweets table
     tweets_fields = ["text", "date", "url", "User_id", "tweet_id"]
@@ -206,11 +209,13 @@ def update_user_tweet( user_db_id, screen_name,from_date):
     mentions_fields = ["tagged_users_id", "Tweet_id"]
     users_id_screen_name = db_logic.get_userid_screen_name_db()
     screen_names = [x['screen_name'] for x in users_id_screen_name]
+    full_names = db_logic.get_full_names()
 
     if len(user_tweets) > 0:
         print 'update user tweets : {0} from date {1}'.format(screen_name, from_date)
     for tweet in user_tweets:
         try:
+            index = user_tweets.index(tweet)
             # tweet table:
             urls = ''
             for tweet_url in tweet['urls']:
@@ -230,10 +235,31 @@ def update_user_tweet( user_db_id, screen_name,from_date):
             ids, mentions_users = return_mentions_hoc_users(tweet['mentions'], users_id_screen_name, screen_names)
 
             # search mentions in tweet text and add them to ids list
+            ### search screen_name and full_name + first and last name
             text = tweet['text']
             for screen_name in screen_names:
                 if str(screen_name) in text:
                     ids.append(get_id_by_screenname(screen_name, users_id_screen_name))
+
+            #search full namd and first and last
+            try:
+                for full_name in full_names:
+                    user_id_mention = db_logic.get_user_id_by_fullname(full_name=full_name)[0]
+                    if full_name in text:
+                        ids.append(user_id_mention)
+                    else:
+                        splited = full_name.split()
+                        for i in range(len(splited)):
+                            name= str(splited[i])
+                            if name in text:
+                                if user_id_mention not in ids:
+                                    ids.append(user_id_mention)
+                            elif name.lower() in str(text).lower():
+                                if user_id_mention not in ids:
+                                    ids.append(user_id_mention)
+            except:
+                print traceback.format_exc()
+                pass
 
             for user_id in ids:
                 mention_values = [user_id, db_tweet_id]
@@ -242,6 +268,7 @@ def update_user_tweet( user_db_id, screen_name,from_date):
         except:
             print 'Error in loading tweets for user {0}'.format(screen_name)
             print traceback.format_exc()
+
 
 def update_user_data(screen_name = None):
     '''
@@ -267,7 +294,7 @@ def update_user_data(screen_name = None):
         user_id = db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
         condition_str = 'id = {0}'.format(user_id)
         db_global_object.update_table(table_name='Users', fields=fields, values=values, condition_str=condition_str)
-        print 'insert user {0}'.format(screen_name)
+        print 'update user {0}'.format(screen_name)
     else:
         print 'problem getting user data on {0}'.format(screen_name)
         print traceback.format_exc()

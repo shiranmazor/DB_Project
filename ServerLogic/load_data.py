@@ -232,6 +232,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
         screen_names = [x['screen_name'] for x in users_id_screen_name_fullname]
         user_ids = [x['id'] for x in users_id_screen_name_fullname]
         full_names = [x['full_name'] for x in users_id_screen_name_fullname]
+        users_id_screen_name = db_logic.get_userid_screen_name_db()
 
         for tweet in user_tweets:
             try:
@@ -256,9 +257,27 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
 
                 #search mentions in tweet text and add them to ids list
                 text = tweet['text']
-                for full_name in full_names:
-                    if str(full_name) in text:
-                        ids.append(get_id_by_full_name(full_name, users_id_screen_name_fullname))
+
+                for screen_name in screen_names:
+                    if str(screen_name) in text:
+                        ids.append(get_id_by_screenname(screen_name, users_id_screen_name))
+                try:
+                    for full_name in full_names:
+                        if str(full_name) in text:
+                            ids.append(get_id_by_full_name(full_name, users_id_screen_name_fullname))
+                        else:
+                            splited = full_name.split()
+                            for i in range(len(splited)):
+                                name = splited[i]
+                                if name in text:
+                                    user_id_mention = db_logic.get_user_id_by_fullname(full_name=full_name)[0]
+                                    if user_id_mention not in ids:
+                                        ids.append(user_id_mention)
+                                elif name.lower() in str(text).lower():
+                                    if user_id_mention not in ids:
+                                        ids.append(user_id_mention)
+                except:
+                    pass
 
                 for user_id in ids:
                     mention_values = [user_id, db_tweet_id]

@@ -42,6 +42,18 @@ class DBLogic():
         except:
             print traceback.format_exc()
 
+    def get_full_names(self):
+        query = 'select full_name from Users'
+        outputs =  self.db_obj.execute_generic_query(query)
+        lst = [x['full_name'] for x in outputs]
+        return lst
+
+    def get_user_id_by_fullname(self, full_name):
+        user_output = self.db_obj.get_values_by_field(table_name='Users', field_name='full_name', field_value=full_name)
+        result = [x['id'] for x in user_output]
+        return result
+
+
     def get_last_id_from_table(self, table_name):
         query = 'select max(id) as last_id from {0}'.format(table_name)
         outputs = self.db_obj.execute_generic_query(query)
@@ -63,7 +75,7 @@ class DBLogic():
     def get_latest_tweet_id(self, user_id, from_date):
         try:
             cursor = self.db_obj.con.cursor()
-            query = ('select max(date), tweet_id from tweets where user_id = %s and date < %s')
+            query = ('select max(date), tweet_id from tweets where user_id = %s and date >= %s')
             cursor.execute(query,(user_id,from_date))
             columns = cursor.description
             result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]

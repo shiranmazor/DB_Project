@@ -6,6 +6,8 @@ from time import gmtime, strftime
 import datetime
 import traceback
 from ServerLogic.common import *
+import time
+import threading
 
 '''
 Every function in this module return a tuple of 2:
@@ -118,21 +120,41 @@ def get_friendship(screen_name_1, screen_name_2):
         print traceback.format_exc()
         return traceback.format_exc(), 1
 
-def update_all_users():
+def update_all_users_backround():
     try:
-        users_data = ud.get_user_list()
-        for user_data in users_data:
-            sn = users_data[user_data]["screen_name"]
-            #get last tweet date
-            last_date = ud.db_logic.get_last_tweet_date(screen_name=sn)
-            update_user(screen_name=sn, from_date=last_date)
-            return True
+        #mProcess = multiprocessing.Process(target=start_update_all_users())
+        t = threading.Thread(name='child process', target=start_update_all_users)
+        t.start()
+        i=0
     except:
+        print  traceback.format_exc()
         return False
 
+def start_update_all_users():
+    try:
+        sleeping_time = 60 * 20  # 16minutes
+        requests_limit = 150  # the limit is 180 requests
+        request_counter = 0
+        users_data = ud.get_user_list()
+        for user_data in users_data:
+            #each user is a request
+            if request_counter >= requests_limit:
+                request_counter = 0
+                print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit, sleeping_time)
+                time.sleep(sleeping_time)
+
+            sn = users_data[user_data]["screen_name"]
+            # get last tweet date
+            last_date = ud.db_logic.get_last_tweet_date(screen_name=sn)
+            update_user(screen_name=sn, from_date=last_date)
+
+    except:
+        print  traceback.format_exc()
+        pass
 
 
-def update_user(screen_name):
+
+def update_user(screen_name, from_date = None):
     '''
     update user info + tweets in db
     :param screen_name:
@@ -141,7 +163,8 @@ def update_user(screen_name):
     '''
     #update user info
     upd.update_user_data(screen_name = screen_name)
-    from_date = ud.db_logic.get_last_tweet_date(screen_name=screen_name)
+    if not from_date:
+        from_date = ud.db_logic.get_last_tweet_date(screen_name=screen_name)
     #update user tweetes
     user_id = ud.db_logic.get_user_id_by_field(field_name='screen_name', field_value=screen_name)
     #
@@ -166,9 +189,13 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         user1_mention2_tweets = user1_mention2_tweets[:number]
         user2_mention1_tweets = user2_mention1_tweets[:number]
         user1_mention2_tweets.extend(user2_mention1_tweets)
-        user1_mention2_tweets = sorted(user1_mention2_tweets, lambda x:x['date'])
+        try:
+            user1_mention2_tweets = sorted(user1_mention2_tweets,key= lambda x:x['date'])
+        except:
+            pass
 
-        print user1_mention2_tweets
+
+
         if len(user1_mention2_tweets) > 0:
             return format_tweet(user1_mention2_tweets, showUser=True)
         else:

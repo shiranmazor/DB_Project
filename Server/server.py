@@ -44,7 +44,7 @@ def person():
 
 @application.route("/update_all_users")
 def update_all_users():
-    #update_all_users()  # commented out - update takes hours
+    update_all_users_backround()  # commented out - update takes hours
     return ""
 
 
