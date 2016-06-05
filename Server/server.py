@@ -26,6 +26,8 @@ def send_static(path):
 def bottom():
     screen_name_1 = str(request.form['screen_name_1'])
     screen_name_2 = str(request.form['screen_name_2'])
+    if screen_name_1 == screen_name_2 == 'disabled':
+        return ""
     friendship = get_friendship(screen_name_1, screen_name_2)
     if friendship[1] == 0:
         return friendship[0]

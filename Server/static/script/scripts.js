@@ -40,6 +40,7 @@ function generate_compare() {
     if (left != 'disabled' && right != 'disabled') {
         if (left == right) {
             alert('same person twice');
+            post('bottom', 'bottom', {screen_name_1: 'disabled', screen_name_2: 'disabled'});
         }
         else {
             post('bottom', 'bottom', {screen_name_1: left, screen_name_2: right});
