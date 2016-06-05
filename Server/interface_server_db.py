@@ -303,7 +303,7 @@ def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
         text += "<br /><a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet_id"]) +\
                str(tweet["date"]) + poster +\
                "</a>""<br /><div style='background-color:#ffffff;font-size:14px;font-family: Times New Roman;border-radius:5px'><i>" +\
-               add_href_to_raw_text(tweet['text']) + "</i></span>"
+               add_href_to_raw_text(tweet['text']) + "</i></span>+<br />"
     return text
 
 def get_popular_searches(count = 5):
