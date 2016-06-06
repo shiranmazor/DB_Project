@@ -60,6 +60,7 @@ def get_friendship(screen_name_1, screen_name_2):
             html_followers = ""
             html_followees = ""
             html_location = ""
+            html_follow_each_other = ""
             html_tweets = get_related_tweets(screen_name_1, screen_name_2)
             for key in shared_info.keys():
                 if key == "party_name":
@@ -72,6 +73,18 @@ def get_friendship(screen_name_1, screen_name_2):
 
                 if key == "location":
                     html_location = "<br />They live in {0}.".format(shared_info["location"])
+
+                if key == "follow_each_other":
+                    if shared_info["follow_each_other"] == [0,0]:
+                        html_follow_each_other = "<br />They don't follow each other."
+                    if shared_info["follow_each_other"] == [1,0]:
+                        html_follow_each_other = "<br />{0} Follows {1} but not the other way around."\
+                            .format(screen_name_1,screen_name_2)
+                    if shared_info["follow_each_other"] == [0, 1]:
+                        html_follow_each_other = "<br />{0} Follows {1} but not the other way around." \
+                            .format(screen_name_2, screen_name_1)
+                    if shared_info["follow_each_other"] == [1, 1]:
+                        html_follow_each_other = "<br />They follow each other."
 
                 if key == "followers":
                     followers = shared_info["followers"]
@@ -115,7 +128,7 @@ def get_friendship(screen_name_1, screen_name_2):
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
             print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
-            return html_prev + html_location + html_party + html_role + html_followers + html_followees + html_tweets + ("<br />")*10, 0
+            return html_prev + html_location + html_party + html_role + html_follow_each_other + html_followers + html_followees + html_tweets + ("<br />")*10, 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1

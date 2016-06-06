@@ -10,7 +10,7 @@ def get_user_data(full_name = None, screen_name = None, user_id= None):
     return user dict from users table
     :param full_name:
     :return: dict of: db_id,twitter_id, full_name,profile_picture_url location, followers_count,friends_count, description,
-     followers_names (full_names), followees_names, role_name, party_name, role_id, party_id
+     followers_screen_names, followees_screen_names, role_name, party_name, role_id, party_id
     '''
     try:
         user_output = {}

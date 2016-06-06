@@ -33,6 +33,13 @@ def get_shared_info(screen_name1, screen_name2):
 
         shared_followees = get_shared_followees_from_users(user1_output, user2_output)
         shared_output["followees"] = shared_followees
+        second_follows_first = 0
+        first_follows_second = 0
+        if screen_name2 in user1_output['followees_names']:
+            second_follows_first = 1
+        if screen_name1 in user2_output['followees_names']:
+            first_follows_second = 1
+        shared_output["follow_each_other"] = [second_follows_first, first_follows_second]
 
     except:
         return shared_output
