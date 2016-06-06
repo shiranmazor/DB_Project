@@ -79,10 +79,12 @@ def get_friendship(screen_name_1, screen_name_2):
                         html_follow_each_other = "<br />They don't follow each other."
                     if shared_info["follow_each_other"] == [1,0]:
                         html_follow_each_other = "<br />{0} Follows {1} but not the other way around."\
-                            .format(screen_name_1,screen_name_2)
+                            .format(users_data[screen_name_1]["full_name"]
+                                    .split()[0], users_data[screen_name_2]["full_name"].split()[0])
                     if shared_info["follow_each_other"] == [0, 1]:
                         html_follow_each_other = "<br />{0} Follows {1} but not the other way around." \
-                            .format(screen_name_2, screen_name_1)
+                            .format(users_data[screen_name_2]["full_name"]
+                                    .split()[0], users_data[screen_name_1]["full_name"].split()[0])
                     if shared_info["follow_each_other"] == [1, 1]:
                         html_follow_each_other = "<br />They follow each other."
 
@@ -96,7 +98,7 @@ def get_friendship(screen_name_1, screen_name_2):
 
                     for follow in followers:
                         try:
-                            f += "<li> "+ str(follow) + "</li>"
+                            f += "<li> "+ str(users_data[follow]["full_name"]) + "</li>"
                             num += 1
                         except:
                             pass
@@ -104,24 +106,24 @@ def get_friendship(screen_name_1, screen_name_2):
                         f += "</ul>"
                         html_followers = "<br />Shared followers:" + f
                     elif count == 1:
-                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
+                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(users_data[followers[0]]["full_name"]))
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
                     f = '<br/><ul style = "list-style-type:disc" >'
                     count = len(followees)
                     num = 1
-                    for follow in followees:
+                    for followee in followees:
                         try:
-                            f += "<li> "+ str(follow) + "</li>"
+                            f += "<li> "+ str(users_data[followee]["full_name"]) + "</li>"
                             num += 1
                         except:
                             pass
                     if count > 1:
                         f += "</ul>"
-                        html_followers = "<br />Shared followers:" + f
+                        html_followees = "<br />Shared followees:" + f
                     elif count == 1:
-                        html_followers = "<br />Shared follower:" + "<br />{0}".format(str(followers[0]))
+                        html_followees = "<br />Shared followee:" + "<br />{0}".format(users_data[followees[0]]["full_name"])
         if html_role == "" and html_location == "" and html_party == ""\
             and html_followers == "" and html_followees == "" and html_tweets == "":
             return "<br /> There is no shared information between {0} and {1}!"\
