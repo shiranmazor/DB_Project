@@ -73,7 +73,18 @@ def load_users_table(db_obj, twiter_obj):
             print traceback.format_exc()
     print 'done with Users table!'
 
-def load_Followers(db_obj,twiter_obj, db_logic ):
+
+def load_followers_single_user(db_obj,twiter_obj, db_logic ,user_id):
+    user_output = db_global_object.get_values_by_field(table_name='Users', field_name='id', field_value=user_id)[0]
+    output = []
+    d={}
+    d['id'] = user_output['id']
+    d['screen_name'] = user_output['screen_name']
+    output.append(d)
+    load_Followers(db_obj,twiter_obj, db_logic ,outputs=output,cursor=True)
+
+
+def load_Followers(db_obj,twiter_obj, db_logic ,outputs =None, cursor = False):
     '''
     scan all the users id in db from users table, for each user id:
     1. get followers list from twitter
@@ -89,8 +100,9 @@ def load_Followers(db_obj,twiter_obj, db_logic ):
         request_counter_followers = 0
 
         # get all user_id from db
-        outputs = db_logic.get_userid_screen_name_db()
-        ids_lst = [x['id'] for x in outputs]
+        if not outputs:
+            outputs = db_logic.get_userid_screen_name_db()
+
         for output_id in outputs:
             try:
                 user_id = output_id['id']
@@ -104,10 +116,10 @@ def load_Followers(db_obj,twiter_obj, db_logic ):
                     time.sleep(sleeping_time_followers)
 
                 request_counter_followers += 1
-                followers_ids = twiter_obj.get_user_followers(screen_name=screen_name)
+                followers_ids = twiter_obj.get_user_followers(screen_name=screen_name, cursor=cursor)
 
                 request_counter_followers += 1
-                followees_ids = twiter_obj.get_user_followees(screen_name=screen_name)
+                followees_ids = twiter_obj.get_user_followees(screen_name=screen_name,cursor=cursor)
 
                 # insert data to db
                 # first as user_id as followee_id - insert all followers of this user to DB
@@ -123,6 +135,7 @@ def load_Followers(db_obj,twiter_obj, db_logic ):
                         fields = ['follower_id', 'followee_id']
                         values = [follower_user_id, followee_id]
                         try:
+                            print 'loading followers to {0}'.format(screen_name)
                             db_obj.insert_to_table(table_name='followers', fields=fields, values=values)
                         except:
                             #in case the tuple was already exist!
@@ -140,6 +153,7 @@ def load_Followers(db_obj,twiter_obj, db_logic ):
                         fields = ['follower_id', 'followee_id']
                         values = [follower_id, followee_user_id]
                         try:
+                            print 'loading followees to {0}'.format(screen_name)
                             db_obj.insert_to_table(table_name='followers', fields=fields, values=values)
                         except:
                             # in case the tuple was already exist!
@@ -313,6 +327,7 @@ def main():
     parser = argparse.ArgumentParser(description='Parse args for load data')
     parser.add_argument('-t', dest="table", type= str, required = False,default='All')
     parser.add_argument('-u', dest="update_table", type=str, required=False, default='All')
+    parser.add_argument('-ui', dest="user_id", type=int, required=False)
     args =  parser.parse_args()
 
     db_obj = DbWrapper()
@@ -327,8 +342,12 @@ def main():
             print 'loading users table'
             load_users_table(db_obj, twiter_obj)
         elif args.table.lower() == 'followers':
-            print 'loading followers'
-            load_Followers(db_obj, twiter_obj, db_logic)
+            if args.user_id :
+                print 'load followers to user id :{0}'.format(args.user_id)
+                load_followers_single_user(db_obj, twiter_obj, db_logic,args.user_id)
+            else:
+                print 'loading followers'
+                load_Followers(db_obj, twiter_obj, db_logic)
         elif args.table.lower() == 'tweets':
             print 'loading tweets table with tweet files and mentions on all users'
             load_tweets_all_users(db_obj, twiter_obj, db_logic)
@@ -345,6 +364,7 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()
 
 

@@ -41,13 +41,12 @@ from
 
 --2. getting the user_id, full_name, screen_name, search count, followers count of the populaar user
 
-select u.id, u.screen_name, u.full_name, ss.user_id
-
-select s.user_id s.count , follow2.followers_count
-from searches as s
-where s.user_id in
+select searches.user_id as user_id,users.full_name, users.screen_name, searches.last_date, searches.count
+from searches , users
+where searches.user_id = users.id
+and searches.user_id in
 (
-select follow2.followee_id , follow2.followers_count
+select follow2.followee_id
 from
 	(
 	select follow.followee_id, max(followers_num) as followers_count
@@ -58,4 +57,4 @@ from
 		group by followee_id
 		) as follow
 	) as follow2
-) as ss
+)

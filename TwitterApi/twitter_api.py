@@ -210,28 +210,35 @@ class Twitter_Api():
         return ids
 
     def get_user_followers(self, screen_name = None, user_id = None, count = 5000, cursor = False):
+
         ids = []
-        output = {}
-        if screen_name:
-            output = self.t.followers.ids(screen_name=screen_name)
-            if len(output) > 0:
-                ids = output["ids"]
-                if cursor:
-                    c = output['next_cursor']
-                    while (c != 0):
-                        ids.extend(output["ids"])
-                        output = self.t.followers.ids(screen_name=screen_name, cursor = c)
-        elif user_id:
-            output = self.t.followers.ids(user_id=user_id)
-            if len(output) > 0:
-                ids = output["ids"]
-                if cursor:
-                    c = output['next_cursor']
-                    while (c != 0):
-                        ids.extend(output["ids"])
-                        output = self.t.followers.ids(user_id=user_id,  cursor = c)
-
-
+        try:
+            output = {}
+            if screen_name:
+                output = self.t.followers.ids(screen_name=screen_name)
+                if len(output) > 0:
+                    ids = output["ids"]
+                    if cursor:
+                        c = output['next_cursor']
+                        while (c != 0):
+                            ids.extend(output["ids"])
+                            output = self.t.followers.ids(screen_name=screen_name, cursor = c)
+                            if len(ids) > 50000:
+                                break
+            elif user_id:
+                output = self.t.followers.ids(user_id=user_id)
+                if len(output) > 0:
+                    ids = output["ids"]
+                    if cursor:
+                        c = output['next_cursor']
+                        while (c != 0):
+                            ids.extend(output["ids"])
+                            output = self.t.followers.ids(user_id=user_id,  cursor = c)
+                            if len(ids) > 50000:
+                                break
+        except:
+            print traceback.format_exc()
+            return ids
         return ids
 
 
