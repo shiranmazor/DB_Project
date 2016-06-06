@@ -57,7 +57,7 @@ def add_uew_users():
                           user_output['location'], user_output['followers_count'], user_output['friends_count'],
                           user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
 
-                db_obj.insert_to_table(table_name='Users', fields=fields, values=values)
+                db_obj.insert_to_table(table_name='users', fields=fields, values=values)
                 print 'insert user {0}'.format(screen_name)
             else:
                 print 'problem getting user data on {0}'.format(screen_name)
@@ -204,9 +204,9 @@ def update_user_tweet( user_db_id, screen_name,from_date):
         return
 
     # insert to tweets table
-    tweets_fields = ["text", "date", "url", "User_id", "tweet_id"]
-    tweet_files_fields = ["file_type", "file_url", "Tweets_id"]
-    mentions_fields = ["tagged_users_id", "Tweet_id"]
+    tweets_fields = ["text", "date", "url", "user_id", "tweet_id"]
+    tweet_files_fields = ["file_type", "file_url", "tweets_id"]
+    mentions_fields = ["tagged_users_id", "tweet_id"]
     users_id_screen_name = db_logic.get_userid_screen_name_db()
     screen_names = [x['screen_name'] for x in users_id_screen_name]
     full_names = db_logic.get_full_names()

@@ -15,11 +15,11 @@ def get_user_data(full_name = None, screen_name = None, user_id= None):
     try:
         user_output = {}
         if full_name:
-            user_output = db_global_object.get_values_by_field(table_name='Users', field_name = 'full_name', field_value = full_name)[0]
+            user_output = db_global_object.get_values_by_field(table_name='users', field_name = 'full_name', field_value = full_name)[0]
         elif screen_name:
-            user_output = db_global_object.get_values_by_field(table_name='Users', field_name='screen_name', field_value=screen_name)[0]
+            user_output = db_global_object.get_values_by_field(table_name='users', field_name='screen_name', field_value=screen_name)[0]
         elif user_id:
-            user_output = db_global_object.get_values_by_field(table_name='Users', field_name='screen_name', field_value=screen_name)[0]
+            user_output = db_global_object.get_values_by_field(table_name='users', field_name='screen_name', field_value=screen_name)[0]
 
         #extract role_name and party name:
         pary_out = db_global_object.get_values_by_field(table_name='party', field_name = 'party_id', field_value = user_output['party_id'])[0]

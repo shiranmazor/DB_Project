@@ -62,7 +62,7 @@ def load_users_table(db_obj, twiter_obj):
                           user_output['location'], user_output['followers_count'], user_output['friends_count'],
                           user_output['twitter_id'], user_output['profile_picutre_url'], role_id, party_id]
 
-                db_obj.insert_to_table(table_name='Users', fields=fields, values=values)
+                db_obj.insert_to_table(table_name='users', fields=fields, values=values)
                 print 'insert user {0}'.format(screen_name)
             else:
                 print 'problem getting user data on {0}'.format(screen_name)
@@ -75,7 +75,7 @@ def load_users_table(db_obj, twiter_obj):
 
 
 def load_followers_single_user(db_obj,twiter_obj, db_logic ,user_id):
-    user_output = db_global_object.get_values_by_field(table_name='Users', field_name='id', field_value=user_id)[0]
+    user_output = db_global_object.get_values_by_field(table_name='users', field_name='id', field_value=user_id)[0]
     output = []
     d={}
     d['id'] = user_output['id']
@@ -160,7 +160,7 @@ def load_Followers(db_obj,twiter_obj, db_logic ,outputs =None, cursor = False):
                             print traceback.format_exc()
 
             except:
-                print 'problen getting followers+followees of user {0}'.format(output_id)
+                print 'problem getting followers+followees of user {0}'.format(output_id)
                 print traceback.format_exc()
     except:
         print traceback.format_exc()
@@ -175,10 +175,10 @@ def load_party_data(db_obj):
     :return:
     '''
     fields = ['party_name']
-    values = ['Democratic','Republican']
+    values = ['Democratic', 'Republican']
     try:
         for value in values:
-            db_obj.insert_to_table(table_name='Party', fields=fields, values=[value])
+            db_obj.insert_to_table(table_name='party', fields=fields, values=[value])
     except Exception as Ex:
         print 'problem with writing party name to db'
         print traceback.format_exc()
@@ -193,7 +193,7 @@ def load_Role_data(db_obj):
     roles = get_values_by_key('role')
     try:
         for value in roles:
-            db_obj.insert_to_table(table_name='Role', fields=fields, values=[value])
+            db_obj.insert_to_table(table_name='role', fields=fields, values=[value])
     except Exception as Ex:
         print 'problem with writing party name to db'
         print traceback.format_exc()
@@ -239,9 +239,9 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
         print 'loading tweets for user {0}'.format(screen_name)
         user_tweets = twiter_obj.get_timeline_only(screen_name= screen_name, count=500)
         #insert to tweets table
-        tweets_fields = ["text","date","url","User_id","tweet_id"]
-        tweet_files_fields = ["file_type","file_url","Tweets_id"]
-        mentions_fields = ["tagged_users_id","Tweet_id"]
+        tweets_fields = ["text", "date", "url", "User_id", "tweet_id"]
+        tweet_files_fields = ["file_type", "file_url", "tweets_id"]
+        mentions_fields = ["tagged_users_id", "tweet_id"]
         users_id_screen_name_fullname = get_user_list()
         screen_names = [x['screen_name'] for x in users_id_screen_name_fullname]
         user_ids = [x['id'] for x in users_id_screen_name_fullname]
@@ -255,7 +255,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
                 for tweet_url in tweet['urls']:
                     urls+=tweet_url+'; '
 
-                tweet_values = [tweet["text"],tweet["time"],urls, user_db_id,tweet["tweet_id"]]
+                tweet_values = [tweet["text"], tweet["time"], urls, user_db_id, tweet["tweet_id"]]
                 db_obj.insert_to_table(table_name='tweets', fields=tweets_fields, values=tweet_values)
                 db_tweet_id = db_logic.get_last_id_from_table('tweets')[0]['last_id']
                 #tweet files table:

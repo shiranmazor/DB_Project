@@ -118,8 +118,8 @@ def get_party_role_id(db_obj,screen_name):
     role_name = users_data[screen_name]['role']
     party_letter = users_data[screen_name]['party']
     party_name = 'Democratic' if party_letter == 'D' else 'Republican'
-    party_out = db_obj.get_values_by_field(table_name = 'Party', field_name = 'party_name', field_value = party_name)
-    role_out = db_obj.get_values_by_field(table_name='Role', field_name='rol_name', field_value=role_name)
+    party_out = db_obj.get_values_by_field(table_name = 'party', field_name = 'party_name', field_value = party_name)
+    role_out = db_obj.get_values_by_field(table_name='role', field_name='rol_name', field_value=role_name)
     return party_out[0]['party_id'],role_out[0]['role_id']
 
 load_users_from_csv()

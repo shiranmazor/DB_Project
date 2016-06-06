@@ -11,7 +11,7 @@ class DBLogic():
 
 
     def get_lastest_tweet_date(self):
-        query = 'select user_id, max(date) as latest_date from tweets group by User_id'
+        query = 'select user_id, max(date) as latest_date from tweets group by user_id'
         outputs = self.db_obj.execute_generic_query(query)
         return outputs
 
@@ -43,13 +43,13 @@ class DBLogic():
             print traceback.format_exc()
 
     def get_full_names(self):
-        query = 'select full_name from Users'
-        outputs =  self.db_obj.execute_generic_query(query)
+        query = 'select full_name from users'
+        outputs = self.db_obj.execute_generic_query(query)
         lst = [x['full_name'] for x in outputs]
         return lst
 
     def get_user_id_by_fullname(self, full_name):
-        user_output = self.db_obj.get_values_by_field(table_name='Users', field_name='full_name', field_value=full_name)
+        user_output = self.db_obj.get_values_by_field(table_name='users', field_name='full_name', field_value=full_name)
         result = [x['id'] for x in user_output]
         return result
 
@@ -59,7 +59,7 @@ class DBLogic():
         outputs = self.db_obj.execute_generic_query(query)
         return outputs
 
-    def get_user_data_by_twitter_id(self,twitter_id):
+    def get_user_data_by_twitter_id(self, twitter_id):
         try:
             cursor = self.db_obj.con.cursor()
             query = "select * from users where twitter_id = %s"

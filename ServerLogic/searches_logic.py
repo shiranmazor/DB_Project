@@ -56,7 +56,7 @@ def get_popular_users(count = 5):
             user_id = search['user_id']
             count = search['count']
             #get user_id data
-            data = db_global_object.get_values_by_field(table_name='Users', field_name='id', field_value=user_id)[0]
+            data = db_global_object.get_values_by_field(table_name='users', field_name='id', field_value=user_id)[0]
             d={}
             d['screen_name'] = str(data['screen_name'])
             #print "MATTAN " + str(user_data.get_user_data(screen_name=data['screen_name']).keys())
