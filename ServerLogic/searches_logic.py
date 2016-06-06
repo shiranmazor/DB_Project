@@ -70,6 +70,17 @@ def get_popular_users(count = 5):
         print traceback.format_exc()
 
 
+def get_twitter_popular_users():
+    return db_logic.get_popularity_users()
+
+
+
+
+if __name__ == '__main__':
+    get_twitter_popular_users()
+
+
+
 
 
 

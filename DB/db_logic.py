@@ -268,3 +268,46 @@ class DBLogic():
         except Exception as ex:
             print 'Error in selecting from db'
             print traceback.format_exc()
+
+
+    def get_popularity_users(self):
+        '''
+        this function execute a complex qeury - returning the user with maximum followers num
+        with his search data - how many times he is being search and when was the last time
+        :return: list of dicts, every dict contain keys: user_id,name,screen_name,last_search,num_of_searches,followers_count
+        '''
+        complex_query1 = '''
+            select searches.user_id as user_id,users.full_name as name, users.screen_name as screen_name, searches.last_date as last_search
+            , searches.count as num_of_searches
+            from searches , users
+            where searches.user_id = users.id
+            and searches.user_id in
+            (
+            select follow2.followee_id
+            from
+                (
+                select follow.followee_id, max(followers_num) as followers_count
+                from
+                    (
+                    select followee_id, count(follower_id) as followers_num
+                    from followers
+                    group by followee_id
+                    ) as follow
+                ) as follow2
+            )
+        '''
+        get_max_followers_count_query = '''
+        select  max(followers_num) as followers_count
+        from
+            (
+            select followee_id, count(follower_id) as followers_num
+            from followers
+            group by followee_id
+            ) as follow
+        '''
+        output1 = self.db_obj.execute_generic_query(complex_query1)
+        output2 = self.db_obj.execute_generic_query(get_max_followers_count_query)[0]
+        for out in output1:
+            out['followers_count'] = output2['followers_count']
+
+        return output1
