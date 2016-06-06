@@ -67,5 +67,9 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', port=5000)
+    if len(sys.argv) == 2:
+        host = sys.argv[1]
+        application.run(host=host,port=consts.TOMCAT_PORT)
+    else:
+        application.run(port=consts.TOMCAT_PORT)
 

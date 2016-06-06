@@ -1,4 +1,5 @@
 import sys
+sys.path.append('mysql_connector_1.0.12.egg-info')
 import mysql.connector as mdb
 import consts
 import traceback
@@ -20,12 +21,15 @@ class DbWrapper():
                                                   charset = 'utf8'
                                         )
         except mdb.Error as err:
+            print traceback.format_exc()
             if err.errno == mdb.errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
+                print "Something is wrong with your user name or password"
             elif err.errno == mdb.errorcode.ER_BAD_DB_ERROR:
                 print("Database does not exist")
             else:
                 print(err)
+        except:
+            print traceback.format_exc()
 
 
     def close_connection(self):

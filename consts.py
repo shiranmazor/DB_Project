@@ -1,7 +1,24 @@
+'''
 DB_HOSTNAME = '127.0.0.1'
 DB_USER = 'root'
 DB_PASSWORD = '1234'
 DB_NAME = 'hoc_db'
+'''
+
+
+
+
+DB_HOSTNAME = 'mysqlsrv.cs.tau.ac.il'
+DB_NAME = 'DbMysql01'
+DB_USER = 'DbMysql01'
+DB_PASSWORD = 'DbMysql01'
+
+
+
+
+
+
+TOMCAT_PORT = 60300
 
 #query format :INSERT INTO TABLE_NAME (f1,f2..) VALUES (%s, %s, %s, %s, %s)
 INSERT_QUERY = 'INSERT INTO {0} ({1}) VALUES '
