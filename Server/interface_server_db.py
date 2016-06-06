@@ -75,16 +75,20 @@ def get_friendship(screen_name_1, screen_name_2):
                     html_location = "<br />They live in {0}.".format(shared_info["location"])
 
                 if key == "follow_each_other":
+                    if users_data[screen_name_1]["full_name"].split()[0] == users_data[screen_name_2]["full_name"].split()[0]:
+                        name1 = users_data[screen_name_1]["full_name"]
+                        name2 = users_data[screen_name_2]["full_name"]
+                    else:
+                        name1 = users_data[screen_name_1]["full_name"].split()[0]
+                        name2 = users_data[screen_name_2]["full_name"].split()[0]
                     if shared_info["follow_each_other"] == [0,0]:
                         html_follow_each_other = "<br />They don't follow each other."
                     if shared_info["follow_each_other"] == [1,0]:
                         html_follow_each_other = "<br />{0} Follows {1} but not the other way around."\
-                            .format(users_data[screen_name_1]["full_name"]
-                                    .split()[0], users_data[screen_name_2]["full_name"].split()[0])
+                            .format(name1, name2)
                     if shared_info["follow_each_other"] == [0, 1]:
                         html_follow_each_other = "<br />{0} Follows {1} but not the other way around." \
-                            .format(users_data[screen_name_2]["full_name"]
-                                    .split()[0], users_data[screen_name_1]["full_name"].split()[0])
+                            .format(name2, name1)
                     if shared_info["follow_each_other"] == [1, 1]:
                         html_follow_each_other = "<br />They follow each other."
 
