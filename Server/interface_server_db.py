@@ -259,6 +259,11 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         shared_tweets = shared[0]
         shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets  = shared
         shared_tweets = shared_tweets[0:number]
+        try:
+            # sort list by date
+            shared_tweets = sorted(shared_tweets, key=lambda x: x['date'])
+        except:
+            pass
         if len(shared_tweets) > 0:
             return "<div style='background: rgba(255, 255, 255, 0.2);'>" + format_tweet(shared_tweets, showUser=True) + "</div>", 0
         else:
