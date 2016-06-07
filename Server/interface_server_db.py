@@ -54,7 +54,7 @@ def get_friendship(screen_name_1, screen_name_2):
         else:
             users_data = ud.get_user_list()
             shared_info = fd.get_shared_info(screen_name_1, screen_name_2)
-            html_prev = "<br />Shared information between {0} and {1}:".format(users_data[screen_name_1]["full_name"],
+            html_prev = "<center><br />Shared information between {0} and {1}:".format(users_data[screen_name_1]["full_name"],
                                                                  users_data[screen_name_2]["full_name"])
             html_party = ""
             html_role = ""
@@ -135,7 +135,7 @@ def get_friendship(screen_name_1, screen_name_2):
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
             print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
-            return html_prev + html_location + html_party + html_role + html_follow_each_other + html_followers + html_followees + html_tweets + ("<br />")*10, 0
+            return html_prev + html_location + html_party + html_role + html_follow_each_other + html_followers + html_followees + html_tweets + ("<br />")*10 + "</center>", 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -237,7 +237,7 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
 
 
         if len(user1_mention2_tweets) > 0:
-            return "<div style='background: rgba(0, 0, 0, 0.2);'>" + format_tweet(user1_mention2_tweets, showUser=True) + "</div>"
+            return "<div style='background: rgba(0, 0, 0, 0.1);'>" + format_tweet(user1_mention2_tweets, showUser=True) + "</div>"
         else:
             return "<br /> There are no tweets mentioning each other."
     except:
@@ -265,7 +265,7 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         except:
             pass
         if len(shared_tweets) > 0:
-            return "<div style='background: rgba(255, 255, 255, 0.2);'>" + format_tweet(shared_tweets, showUser=True) + "</div>", 0
+            return "<div style='background: rgba(255, 255, 255, 0.1);'>" + format_tweet(shared_tweets, showUser=True) + "</div>", 0
         else:
             return "There are no tweets mentioning the same person.", 0
     except:
@@ -359,7 +359,7 @@ def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
             tweet = tweet["tweet"]
         #print tweet
         #print users_data
-        color_code = '#ffffff' if not showUser else 'hsla({}, 82%, 82%, 1)'.format(string_mod360(tweet["screen_name"]))
+        color_code = '#ffffff' if not showUser else 'hsla({}, 82%, 82%, 0.5)'.format(string_mod360(tweet["screen_name"]))
         poster = (" {} ({})".format(users_data[tweet["screen_name"]]["real_name"], tweet["screen_name"]) if showUser else "")
         text += "<br /><br /><a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet_id"]) +\
                str(tweet["date"]) + poster +\
