@@ -7,6 +7,7 @@ sys.path.append("itsdangerous.egg-info")
 from flask import Flask, render_template, request, url_for, send_from_directory
 from interface_server_db import *
 import traceback
+import time
 
 
 application = Flask(__name__)
@@ -49,14 +50,19 @@ def person():
 
 @application.route("/update_all_users")
 def update_all_users():
-    update_all_users_backround()  # commented out - update takes hours
-    return ""
+    update_file = os.path.join("static", "system", "update_status.txt")
+    if os.path.isfile(update_file):
+        create_time = str(time.ctime(os.path.getmtime(update_file)))
+        return "<script>alert('Cannot start a DB update. Update is already in progress! Update started in: {}')</script>".format(create_time)
+    else:
+        #update_all_users_backround()  # commented out - update takes hours
+        return ""
 
 
 
 @application.route("/top_searches")
 def top_searches():
-    return get_popular_searches(3)[0]
+    return get_popular_searches(3)[0] + "<br /><a href='update_all_users' target='dummy'>Click here to update all users</a>"
 
 
 @application.route("/test")

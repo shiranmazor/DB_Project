@@ -338,6 +338,7 @@ def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
     text = ""
     for i in range(min(len(tweets_list), chop)):
         tweet = tweets_list[i]
+        #print tweet
         if type(tweet) == dict and "tweet" in tweet:
             tweet = tweet["tweet"]
         #print tweet
@@ -378,7 +379,7 @@ def get_popular_searches(count = 5):
                 text2 += "<br /><span title='Last searched on {}'>{} (Followers: {}, Counter: {})</span>".format(person["last_search"], person["name"], person["followers_count"], person["num_of_searches"])
             text2 += "</div>"
 
-        return "<div style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:large'>Most popular searched:<br/ >{}{}<small>Last updated: {} GMT</small></div>".format(text, text2, get_date()), 0
+        return "<div style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:large'>Most popular searched:<br/ >{}{}<small>Last updated: {}</small></div>".format(text, text2, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
