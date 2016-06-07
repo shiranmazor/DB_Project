@@ -2,6 +2,7 @@ import datetime
 import threading
 import time
 from time import gmtime, strftime
+import os
 
 import ServerLogic.friendship_data as fd
 import ServerLogic.searches_logic as sd
@@ -150,7 +151,9 @@ def update_all_users_backround():
         return False
 
 def start_update_all_users():
+    update_file = open('update_status.txt', 'w')
     try:
+        #we will open a new file in order to save all our logs
         sleeping_time = 60 * 20  # 16minutes
         requests_limit = 150  # the limit is 180 requests
         request_counter = 0
@@ -159,17 +162,31 @@ def start_update_all_users():
             #each user is a request
             if request_counter >= requests_limit:
                 request_counter = 0
-                print 'reaching request limit {0} sleeping for {1} seconds'.format(requests_limit, sleeping_time)
+                update_file.write('sleeping: reaching request limit {0} sleeping for {1} seconds\n'.format(requests_limit, sleeping_time))
+                print 'sleeping: reaching request limit {0} sleeping for {1} seconds\n'.format(requests_limit, sleeping_time)
+                update_file.flush()
                 time.sleep(sleeping_time)
 
             sn = users_data[user_data]["screen_name"]
             # get last tweet date
             last_date = ud.db_logic.get_last_tweet_date(screen_name=sn)
+            update_file.write('update: user {0}\n'.format(sn))
+            update_file.flush()
             update_user(screen_name=sn, from_date=last_date)
+            update_file.write('finish: user {0}\n'.format(sn))
+            update_file.flush()
+            break
 
     except:
         print  traceback.format_exc()
         pass
+    finally:
+        update_file.write("finish: all users")
+        update_file.close()
+        if os.path.exists('finished_update_status.txt'):
+            os.remove('finished_update_status.txt')
+        os.rename('update_status.txt','finished_update_status.txt' )
+
 
 
 
