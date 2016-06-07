@@ -60,8 +60,8 @@ def get_friendship(screen_name_1, screen_name_2):
             html_followers = ""
             html_followees = ""
             html_location = ""
-            html_follow_each_other = ""
-            html_tweets = get_related_tweets(screen_name_1, screen_name_2)
+            html_tweets = "<br />Tweets mentioning each other:<br />" + get_related_tweets(screen_name_1, screen_name_2)
+            html_tweets += "<br />Tweets mentioning same people:<br />" + get_tweets_shared(screen_name_1, screen_name_2)[0]
             for key in shared_info.keys():
                 if key == "party_name":
                     html_party = "<br />Both are {0}.".format(shared_info["party_name"])
@@ -72,7 +72,7 @@ def get_friendship(screen_name_1, screen_name_2):
                     html_role = "<br />They are {0}s.".format(shared_info["role_name"])
 
                 if key == "location":
-                    html_location = "<br />They live in {0}.".format(shared_info["location"])
+                    htmtl_location = "<br />They live in {0}.".format(shared_info["location"])
 
                 if key == "follow_each_other":
                     if users_data[screen_name_1]["full_name"].split()[0] == users_data[screen_name_2]["full_name"].split()[0]:
@@ -218,7 +218,7 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
         if len(user1_mention2_tweets) > 0:
             return format_tweet(user1_mention2_tweets, showUser=True)
         else:
-            return "<br /> There are no shared tweets."
+            return "<br /> There are no tweets mentioning each other."
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -238,15 +238,10 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         shared_tweets = shared[0]
         shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets  = shared
         shared_tweets = shared_tweets[0:number]
-
-        tweets = ""
-        count = 1
-
-        for tweet in shared_tweets:
-            tweets +="<br /> " + str(count) + ". " + str(tweet)
-            count += 1
-
-        return "<br /> The shared Tweets are: " + tweets, 0
+        if len(shared_tweets) > 0:
+            return format_tweet(shared_tweets, showUser=True), 0
+        else:
+            return "There are no tweets mentioning the same person.", 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
@@ -313,6 +308,7 @@ def add_href_to_raw_text(string, target="_blank"):
 def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
 
     def string_mod360(string):
+        string = str(string)
         sum = 0
         for c in string:
             sum += ord(c)
@@ -348,12 +344,20 @@ def get_popular_searches(count = 5):
             dic = searched_list[i]
             #print "MTN " + str(dic)
             if i in [0,1,2]:
-                text += "<font color='{0}'>{1} ({2})</font> ".format(str_replace(i,"0",GOLD,"1",SILVER,"2",BRONZE), dic["full_name"], dic["count"])
+                #print dic
+                text += "<font color='{}' title='Last searched on {}'>{} ({})</font> ".format(str_replace(i,"0",GOLD,"1",SILVER,"2",BRONZE), str(dic["last_date"]), dic["full_name"], dic["count"])
             else:
                 print dic["full_name"], dic["count"]
                 text += "{0} ({1})".format(dic["full_name"], dic["count"])
+        most_followed = sd.get_twitter_popular_users()
+        text2 = ""
+        if len(most_followed) > 0:
+            text2 = "<br /><div style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:large'>Most followed searched:"
+            for person in most_followed:
+                text2 += "<br /><span title='Last searched on {}'>{} (Followers: {}, Counter: {})</span>".format(person["last_search"], person["name"], person["followers_count"], person["num_of_searches"])
+            text2 += "</div>"
 
-        return "<div title='Last searched on {}' style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:x-large'>Most popular searched<br/ >{}<br/><small>Last updated: {} GMT</small></div>".format(str(dic["last_date"]), text, get_date()), 0
+        return "<div style='color: white; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue; font-size:large'>Most popular searched:<br/ >{}{}<small>Last updated: {} GMT</small></div>".format(text, text2, get_date()), 0
     except:
         print traceback.format_exc()
         return traceback.format_exc(), 1
