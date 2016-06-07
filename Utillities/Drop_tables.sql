@@ -1,10 +1,10 @@
-DROP TABLE Mentions;
-DROP TABLE Searches;
-DROP TABLE Tweet_files;
-DROP TABLE Tweets;
-DROP TABLE Users;
-DROP TABLE Followers;
-DROP TABLE Party;
+DROP TABLE mentions;
+DROP TABLE searches;
+DROP TABLE tweet_files;
+DROP TABLE tweets;
+DROP TABLE users;
+DROP TABLE followers;
+DROP TABLE party;
 DROP TABLE role;
 
 DELETE FROM Users;

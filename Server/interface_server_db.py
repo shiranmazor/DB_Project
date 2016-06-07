@@ -1,13 +1,13 @@
-import ServerLogic.user_data as ud
+import datetime
+import threading
+import time
+from time import gmtime, strftime
+
 import ServerLogic.friendship_data as fd
 import ServerLogic.searches_logic as sd
 import ServerLogic.update_data_from_twiter as upd
-from time import gmtime, strftime
-import datetime
-import traceback
+import ServerLogic.user_data as ud
 from ServerLogic.common import *
-import time
-import threading
 
 '''
 Every function in this module return a tuple of 2:

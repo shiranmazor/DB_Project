@@ -16,18 +16,13 @@ class DbWrapper():
         try:
             self.con = mdb.connect(user=consts.DB_USER, password=consts.DB_PASSWORD,
                                    host=consts.DB_HOSTNAME,
-                                   database=consts.DB_NAME,
+                                       database=consts.DB_NAME,
                                     use_unicode = True,
                                                   charset = 'utf8'
                                         )
         except mdb.Error as err:
             print traceback.format_exc()
-            if err.errno == mdb.errorcode.ER_ACCESS_DENIED_ERROR:
-                print "Something is wrong with your user name or password"
-            elif err.errno == mdb.errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
-            else:
-                print(err)
+            print(err)
         except:
             print traceback.format_exc()
 

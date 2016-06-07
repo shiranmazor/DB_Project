@@ -216,7 +216,7 @@ class DBLogic():
             query = '''
             select *
             from tweet_files
-            where tweets_id = %s
+            where tweet_id = %s
             '''
             cursor.execute(query, (tweet_id,))
             columns = cursor.description

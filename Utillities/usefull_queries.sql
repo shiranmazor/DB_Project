@@ -58,3 +58,7 @@ from
 		) as follow
 	) as follow2
 )
+
+--corecting auth error:
+SET SESSION old_passwords=FALSE;
+SET PASSWORD = PASSWORD('DbMysql01');

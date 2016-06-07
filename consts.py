@@ -1,21 +1,16 @@
-'''
+
 DB_HOSTNAME = '127.0.0.1'
 DB_USER = 'root'
 DB_PASSWORD = '1234'
 DB_NAME = 'hoc_db'
+
+
 '''
-
-
-
-
 DB_HOSTNAME = 'mysqlsrv.cs.tau.ac.il'
 DB_NAME = 'DbMysql01'
 DB_USER = 'DbMysql01'
 DB_PASSWORD = 'DbMysql01'
-
-
-
-
+'''
 
 
 TOMCAT_PORT = 60300

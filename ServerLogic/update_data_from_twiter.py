@@ -205,7 +205,7 @@ def update_user_tweet( user_db_id, screen_name,from_date):
 
     # insert to tweets table
     tweets_fields = ["text", "date", "url", "user_id", "tweet_id"]
-    tweet_files_fields = ["file_type", "file_url", "tweets_id"]
+    tweet_files_fields = ["file_type", "file_url", "tweet_id"]
     mentions_fields = ["tagged_users_id", "tweet_id"]
     users_id_screen_name = db_logic.get_userid_screen_name_db()
     screen_names = [x['screen_name'] for x in users_id_screen_name]

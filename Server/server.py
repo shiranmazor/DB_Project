@@ -1,6 +1,9 @@
 import sys
 import os
 sys.path.append("../")
+sys.path.append("flask_egg")
+sys.path.append("flask")
+sys.path.append("itsdangerous.egg-info")
 from flask import Flask, render_template, request, url_for, send_from_directory
 from interface_server_db import *
 import traceback

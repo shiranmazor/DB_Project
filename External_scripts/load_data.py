@@ -240,7 +240,7 @@ def load_tweets_user(db_obj , twiter_obj, user_db_id, screen_name, db_logic):
         user_tweets = twiter_obj.get_timeline_only(screen_name= screen_name, count=500)
         #insert to tweets table
         tweets_fields = ["text", "date", "url", "User_id", "tweet_id"]
-        tweet_files_fields = ["file_type", "file_url", "tweets_id"]
+        tweet_files_fields = ["file_type", "file_url", "tweet_id"]
         mentions_fields = ["tagged_users_id", "tweet_id"]
         users_id_screen_name_fullname = get_user_list()
         screen_names = [x['screen_name'] for x in users_id_screen_name_fullname]

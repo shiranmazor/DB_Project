@@ -140,7 +140,7 @@ def get_last_tweets(count = 0,from_date = None, user_id = None, full_name = None
     return output_lst
 
 def get_tweet_files(tweet_id):
-    files_out = db_global_object.get_values_by_field( table_name = 'tweet_files', field_name = 'tweets_id', field_value = tweet_id)
+    files_out = db_global_object.get_values_by_field( table_name = 'tweet_files', field_name = 'tweet_id', field_value = tweet_id)
     return files_out
 
 def get_tweet_mentions(tweet_id):
