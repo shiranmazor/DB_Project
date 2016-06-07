@@ -151,7 +151,11 @@ def update_all_users_backround():
         return False
 
 def start_update_all_users():
-    update_file = open('update_status.txt', 'w')
+    file_folder = os.path.join(os.getcwd(), 'static','system')
+    if not os.path.exists(file_folder):
+        os.makedirs(file_folder)
+    file_path = os.path.join(file_folder, 'update_status.txt')
+    update_file = open(file_path, 'w')
     try:
         #we will open a new file in order to save all our logs
         sleeping_time = 60 * 20  # 16minutes
@@ -175,7 +179,6 @@ def start_update_all_users():
             update_user(screen_name=sn, from_date=last_date)
             update_file.write('finish: user {0}\n'.format(sn))
             update_file.flush()
-            break
 
     except:
         print  traceback.format_exc()
@@ -183,9 +186,10 @@ def start_update_all_users():
     finally:
         update_file.write("finish: all users")
         update_file.close()
-        if os.path.exists('finished_update_status.txt'):
-            os.remove('finished_update_status.txt')
-        os.rename('update_status.txt','finished_update_status.txt' )
+        finish_file_parh = os.path.join(file_folder,'finished_update_status.txt' )
+        if os.path.exists(finish_file_parh):
+            os.remove(finish_file_parh)
+        os.rename(file_path,finish_file_parh)
 
 
 
