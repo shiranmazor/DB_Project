@@ -285,7 +285,7 @@ def get_user_data(screen_name):
         <style>
         html, body {
         font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-        font-size:x-large;
+        font-size:large;
         }
         </style>
         </head>
