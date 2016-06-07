@@ -237,7 +237,7 @@ def get_related_tweets(screen_name_1, screen_name_2,number = 20):
 
 
         if len(user1_mention2_tweets) > 0:
-            return format_tweet(user1_mention2_tweets, showUser=True)
+            return "<div style='background: rgba(0, 0, 0, 0.2);'>" + format_tweet(user1_mention2_tweets, showUser=True) + "</div>"
         else:
             return "<br /> There are no tweets mentioning each other."
     except:
@@ -260,7 +260,7 @@ def get_tweets_shared(screen_name_1, screen_name_2,number = 20):
         shared_users_tweets, user1_mention2_tweets, user2_mention1_tweets  = shared
         shared_tweets = shared_tweets[0:number]
         if len(shared_tweets) > 0:
-            return format_tweet(shared_tweets, showUser=True), 0
+            return "<div style='background: rgba(255, 255, 255, 0.2);'>" + format_tweet(shared_tweets, showUser=True) + "</div>", 0
         else:
             return "There are no tweets mentioning the same person.", 0
     except:
@@ -278,9 +278,20 @@ def get_user_data(screen_name):
     try:
         user_data = ud.get_user_data(screen_name=screen_name)
         #html = "<br /> <img src={}>".format(user_data["profile_picture_url"])
-        html =        "<!DOCTYPE html>\
-        <html lang='en'><body><center>"
-
+        html = '''
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+        <style>
+        html, body {
+        font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+        font-size:x-large;
+        }
+        </style>
+        </head>
+        <body>
+        <center>
+'''
         html += "<br /><a href='https://twitter.com/{}' target='_blank'><img src='https://twitter.com/{}/profile_image?size=original' style='border-radius: 50%;width:150px;height:auto' /></a>".format(screen_name, screen_name)
 
 
