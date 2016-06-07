@@ -124,7 +124,7 @@ def get_shared_tweets(screen_name1, screen_name2):
             tagged_users = db_logic.get_mentions_userid(tweet_id=tweet_id)
             tagged_ids = [x['tagged_users_id'] for x in tagged_users]
             if user_id1 in tagged_ids:
-                user2_mention1_tweets.append(user2_tweet)
+                    user2_mention1_tweets.append(user2_tweet)
 
             # get tweet_files:
             tweet_files = db_logic.get_tweet_files(tweet_id=tweet_id)
@@ -136,7 +136,7 @@ def get_shared_tweets(screen_name1, screen_name2):
         for user_tweet in user1_data:
 
             tagged1 = user_tweet['tagged_users']
-            tweets = return_tweets_with_tags(user2_data, tagged1)
+            tweets = return_tweets_with_tags(user2_data, tagged1, user_id1)
             if len(tweets) > 0:
                 #user_tweet contains poeple mentions in user2 tweets
                 shared_users_tweets.extend(tweets)
@@ -148,12 +148,19 @@ def get_shared_tweets(screen_name1, screen_name2):
         return [],[],[]
 
 
-def return_tweets_with_tags(user_data, tagged_lst):
+def return_tweets_with_tags(user_data, tagged_lst, user_id1):
+    '''
+    search all tagged ids from tagged_lst in user_data tageed_ids and return the shared tweets
+    :param user_data:
+    :param tagged_lst:
+    :param user_id1:
+    :return:
+    '''
     result = []
     for tweet in user_data:
         tagged2 = tweet['tagged_users']
         for user_id in tagged_lst:
-            if user_id in tagged2:
+            if user_id in tagged2 and user_id !=user_id1:
                 result.append(tweet)
 
     return result
