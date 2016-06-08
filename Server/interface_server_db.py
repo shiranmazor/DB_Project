@@ -82,9 +82,9 @@ def get_friendship(screen_name_1, screen_name_2):
                     else:
                         name1 = users_data[screen_name_1]["full_name"].split()[0]
                         name2 = users_data[screen_name_2]["full_name"].split()[0]
-                    if shared_info["follow_each_other"] == [0,0]:
+                    if shared_info["follow_each_other"] == [0, 0]:
                         html_follow_each_other = "<br />They don't follow each other."
-                    if shared_info["follow_each_other"] == [1,0]:
+                    if shared_info["follow_each_other"] == [1, 0]:
                         html_follow_each_other = "<br />{0} Follows {1} but not the other way around."\
                             .format(name1, name2)
                     if shared_info["follow_each_other"] == [0, 1]:
@@ -99,33 +99,31 @@ def get_friendship(screen_name_1, screen_name_2):
 
                     count = len(followers)
                     num = 1
-                    f = "<ul>"
+                    f = ''
 
                     for follow in followers:
                         try:
-                            f += "<li> "+ str(users_data[follow]["full_name"]) + "</li>"
+                            f += "<br />"+ str(users_data[follow]["full_name"])
                             num += 1
                         except:
                             pass
                     if count > 1:
-                        f += "</ul>"
                         html_followers = "<br />Shared followers:" + f
                     elif count == 1:
                         html_followers = "<br />Shared follower:" + "<br />{0}".format(str(users_data[followers[0]]["full_name"]))
                 if key == "followees":
                     followees = shared_info["followees"]
                     followees = followees[0:100]
-                    f = '<br/><ul style = "list-style-type:disc" >'
+                    f = ""
                     count = len(followees)
                     num = 1
                     for followee in followees:
                         try:
-                            f += "<li> "+ str(users_data[followee]["full_name"]) + "</li>"
+                            f += "<br />"+ str(users_data[followee]["full_name"])
                             num += 1
                         except:
                             pass
                     if count > 1:
-                        f += "</ul>"
                         html_followees = "<br />Shared followees:" + f
                     elif count == 1:
                         html_followees = "<br />Shared followee:" + "<br />{0}".format(users_data[followees[0]]["full_name"])
@@ -300,11 +298,14 @@ def get_user_data(screen_name):
         html += "<br /><a href='https://twitter.com/{}' target='_blank'><img src='https://twitter.com/{}/profile_image?size=original' style='border-radius: 50%;width:150px;height:auto' /></a>".format(screen_name, screen_name)
 
 
-        html += "<br />{} ".format(user_data["full_name"])
+        html += "<br />{}<br />".format(user_data["full_name"])
         if user_data["role_name"]:
             html += "<br />Is a {} ".format(user_data["role_name"])
         if user_data["location"]:
             html += "<br />From {} ".format(user_data["location"])
+
+        html += "<br />Has {} friends".format(user_data["friends_count"])
+        html += "<br />and {} followers".format(user_data["followers_count"])
         last_tweets = ud.get_last_tweets(count=1, screen_name=screen_name)
         #last_tweet = ud.get_last_tweets(count=1, screen_name=screen_name)[0]['tweet']['text']
         last_tweet = format_tweet(last_tweets, 1)
