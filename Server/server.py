@@ -17,8 +17,7 @@ def hello():
     tuples = create_tuples("full_name", "party_name")
     data = ""
     if tuples[1] == 0:
-        data = {"params": ["sharon", "yoyo", "fuck off!", "bla bla bla..."],
-                "title": "Hello Mates", "users_tuples": create_tuples("full_name", "party_name")[0],
+        data = {"title": "Hello Mates", "users_tuples": create_tuples("full_name", "party_name")[0],
                 "select_names": ["screen_name_1", "screen_name_2"], "popular_searches": get_popular_searches()[0]}
     return render_template('index.html', **data)
 
@@ -64,10 +63,6 @@ def update_all_users():
 def top_searches():
     return get_popular_searches(3)[0] + "<br /><a href='update_all_users' target='dummy'>Click here to update all users</a>"
 
-
-@application.route("/test")
-def test():
-    return "<h1 style='color:blue'>YOYO!</h1>"
 
 
 @application.errorhandler(404)

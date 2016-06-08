@@ -134,7 +134,7 @@ def get_friendship(screen_name_1, screen_name_2):
             return "<br /> There is no shared information between {0} and {1}!"\
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
-            print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
+            #print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
             return html_prev + html_location + html_party + html_role + html_follow_each_other + html_followers + html_followees + html_tweets + ("<br />")*10 + "</center>", 0
     except:
         print traceback.format_exc()
@@ -385,7 +385,7 @@ def get_popular_searches(count = 5):
                 #print dic
                 text += "<font color='{}' title='Last searched on {}'>{} ({})</font> ".format(str_replace(i,"0",GOLD,"1",SILVER,"2",BRONZE), str(dic["last_date"]), dic["full_name"], dic["count"])
             else:
-                print dic["full_name"], dic["count"]
+                #print dic["full_name"], dic["count"]
                 text += "{0} ({1})".format(dic["full_name"], dic["count"])
         most_followed = sd.get_twitter_popular_users()
         text2 = ""
