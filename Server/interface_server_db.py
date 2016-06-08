@@ -132,7 +132,6 @@ def get_friendship(screen_name_1, screen_name_2):
             return "<br /> There is no shared information between {0} and {1}!"\
                        .format(users_data[screen_name_1]["full_name"], users_data[screen_name_2]["full_name"]), 0
         else:
-            #print "shalom " + str(fd.get_shared_tweets(screen_name_1, screen_name_2))
             return html_prev + html_location + html_party + html_role + html_follow_each_other + html_followers + html_followees + html_tweets + ("<br />")*10 + "</center>", 0
     except:
         print traceback.format_exc()
@@ -355,11 +354,8 @@ def format_tweet(tweets_list, chop=sys.maxint, showUser=False):
     text = ""
     for i in range(min(len(tweets_list), chop)):
         tweet = tweets_list[i]
-        #print tweet
         if type(tweet) == dict and "tweet" in tweet:
             tweet = tweet["tweet"]
-        #print tweet
-        #print users_data
         color_code = '#ffffff' if not showUser else 'hsla({}, 82%, 82%, 0.5)'.format(string_mod360(tweet["screen_name"]))
         poster = (" {} ({})".format(users_data[tweet["screen_name"]]["real_name"], tweet["screen_name"]) if showUser else "")
         text += "<br /><br /><a href='https://twitter.com/anyuser/status/{0}' target='_blank'>".format(tweet["tweet_id"]) +\
@@ -381,12 +377,9 @@ def get_popular_searches(count = 5):
         GOLD, SILVER, BRONZE = '#ffe400', '#c3c7ca', '#c56f50'
         for i in range(len(searched_list)):
             dic = searched_list[i]
-            #print "MTN " + str(dic)
             if i in [0,1,2]:
-                #print dic
                 text += "<font color='{}' title='Last searched on {}'>{} ({})</font> ".format(str_replace(i,"0",GOLD,"1",SILVER,"2",BRONZE), str(dic["last_date"]), dic["full_name"], dic["count"])
             else:
-                #print dic["full_name"], dic["count"]
                 text += "{0} ({1})".format(dic["full_name"], dic["count"])
         most_followed = sd.get_twitter_popular_users()
         text2 = ""
