@@ -319,16 +319,21 @@ def get_user_data(screen_name):
         return traceback.format_exc(), 1
 
 def remove_useless_chars(string):
-    left = 0
-    right = len(string) - 1
-    while(string[left] != "_" and not(string[left].isalnum())):
-        left += 1
-    while(string[right] != "_" and not(string[right].isalnum())):
-        right -= 1
-    if left < right:
-        return string[left:right + 1]
-    else:
-        return ""
+    try:
+        left = 0
+        right = len(string) - 1
+        while(string[left] != "_" and not(string[left].isalnum())):
+            left += 1
+        while(string[right] != "_" and not(string[right].isalnum())):
+            right -= 1
+        if left < right:
+            return string[left:right + 1]
+        else:
+            return ""
+    except IndexError:
+        return string
+    except:
+        return string
 
 def add_href_to_raw_text(string, target="_blank"):
     string = string.encode('utf-8')

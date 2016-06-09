@@ -4,7 +4,6 @@ DB_USER = 'root'
 DB_PASSWORD = '1234'
 DB_NAME = 'hoc_db'
 
-
 '''
 DB_HOSTNAME = 'mysqlsrv.cs.tau.ac.il'
 DB_NAME = 'DbMysql01'
@@ -38,43 +37,3 @@ LOGOS = {"Republican": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9
          "Democratic": "http://findicons.com/files/icons/1184/quickpix_2008/128/democrat.png"}
 
 
-complex_query1 = '''
-select t.*
-from tweets as t,  mentions as m
-where t.user_id in
-
-(select s.user_id as user_id
-from  searches as s
-where s.count =
-(
--- get max counter
-select  max(s.count)
-from searches as s
-)
-)
-
-and m.tweet_id = t.id
-and m.tagged_users_id in
-
-(select s.user_id as user_id
-from  searches as s
-where s.count =
-(
--- get max counter
-select  max(s.count)
-from searches as s
-)
-)
-order by t.date desc
-'''
-
-get_popular_users_query ='''
-select s.user_id as user_id
-from  searches as s
-where s.count =
-(
--- get max counter
-select  max(s.count)
-from searches as s
-)
-'''

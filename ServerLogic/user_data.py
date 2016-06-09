@@ -148,8 +148,3 @@ def get_tweet_mentions(tweet_id):
                                                      field_value=tweet_id)
     return mentions
 
-
-
-
-if __name__ == '__main__':
-    get_last_tweets(user_id=3, count=5)

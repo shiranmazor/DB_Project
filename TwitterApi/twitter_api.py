@@ -15,8 +15,6 @@ class Twitter_Api():
     important dicts: name_to_screen,screen_to_name,users_id_to_screen_name
     '''
     def __init__(self):
-        #self.name_to_screen = {}
-        #self.screen_to_name = {}
         self.t = Twitter(auth=OAuth(TOKEN, TOKEN_KEY, CON_SECRET, CON_SECRET_KEY))
         #load users to dict
         self.users_id_to_screen_name = {}

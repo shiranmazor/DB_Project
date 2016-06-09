@@ -298,7 +298,3 @@ def update_user_data(screen_name = None):
     else:
         print 'problem getting user data on {0}'.format(screen_name)
         print traceback.format_exc()
-
-if __name__ == '__main__':
-
-    update_Tweets(all = True)

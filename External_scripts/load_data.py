@@ -8,6 +8,7 @@ uses twitter_api module
 '''
 import sys
 import time
+sys.path.append("../")
 from TwitterApi.twitter_api import *
 from DB.db_wrapper import *
 from DB.db_logic import *
@@ -364,7 +365,6 @@ def main():
 
 
 if __name__ == '__main__':
-
     main()
 
 
