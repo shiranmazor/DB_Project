@@ -144,7 +144,7 @@ def update_all_users_backround():
         t.start()
         i=0
     except:
-        print  traceback.format_exc()
+        print traceback.format_exc()
         return False
 
 def start_update_all_users():
